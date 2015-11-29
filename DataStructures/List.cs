@@ -333,21 +333,10 @@ namespace DataStructures
 
         public void Sort()
         {
-
+            this.quickSort(_head, _tail);
         }
 
-        private void SortDataQuick(ref int[] data, ref SolidColorBrush[] colors)
-        {
-            quickSortRecursive(0, data.Length - 1, ref data, ref colors);
-
-            for (int i = 0; i < data.Length; i++)
-                colors[i] = violet;
-            this.Dispatcher.Invoke((Action)(() => syncRectanglesToData()), System.Windows.Threading.DispatcherPriority.Render);
-            this.Dispatcher.Invoke((Action)(() => { QuickSort.IsEnabled = true; }));
-
-        }
-
-        private void quickSortRecursive(int indexStart, int indexEnd, ref int[] dataSlice, ref SolidColorBrush[] colors)
+        private void quickSort(ListNode<T> start, ListNode<T> end)
         {
             /*
             https://en.wikipedia.org/wiki/Quicksort
@@ -368,23 +357,20 @@ namespace DataStructures
                 return i
             */
 
-            //show what range is being tested in this recursion
-            for (int i = indexStart; i <= indexEnd; i++)
-                colors[i] = blue;
-            this.Dispatcher.Invoke((Action)(() => syncRectanglesToData()), System.Windows.Threading.DispatcherPriority.Render);
-            Thread.Sleep(ANIMATION_DELAY);
 
+            //TODO: this was important to the algorithm's termination! how do we know a node isn't after???
+            // maybe it is safe to test end != start || start.prev != end
             if (indexStart < indexEnd)
             {
-                int partitionIndex = quickSortPartition(indexStart, indexEnd, ref data, ref colors); //partitioning is where the swapping takes place
-                for (int i = indexStart; i <= indexEnd; i++)
-                    colors[i] = violet;
-                quickSortRecursive(indexStart, partitionIndex - 1, ref data, ref colors);
-                quickSortRecursive(partitionIndex + 1, indexEnd, ref data, ref colors);
+                ListNode<T> paritionNode = quickSortPartition(start, end);
+                quickSort(start, paritionNode.Prev);
+                quickSort(paritionNode.Next, end);
+                //quickSort(indexStart, partitionIndex - 1, ref data, ref colors);
+                //quickSortRecursive(partitionIndex + 1, indexEnd, ref data, ref colors);
             }
         }
 
-        private int quickSortPartition(int indexStart, int indexEnd, ref int[] data, ref SolidColorBrush[] colors)
+        private int quickSortPartition(ListNode<T> start, ListNode<T> end)
         {
             /*
             partition(A, lo, hi)
@@ -399,30 +385,18 @@ namespace DataStructures
             */
             int temp;
             int pivotDatum = data[indexEnd]; // save the data magnitude we are using for pivot in a temporary variable (last point chosen as pivotDatum is per "Lomuto partition scheme")
-            colors[indexEnd] = green;
             int currPivotIndex = indexStart; // index that will become our actual halfway point (all data less than pivotDatum will go before halfway point)
             for (int i = indexStart; i <= indexEnd - 1; i++) // from indexStart to one less than index of pivotDatum
             {
-                colors[i] = green;
-                this.Dispatcher.Invoke((Action)(() => syncRectanglesToData()), System.Windows.Threading.DispatcherPriority.Render);
-                Thread.Sleep(ANIMATION_DELAY);
-
                 if (data[i] <= pivotDatum)
                 {
-                    colors[currPivotIndex] = green;
                     // swap data[j] and data[currPivotIndex]
                     temp = data[currPivotIndex];
                     data[currPivotIndex] = data[i];
                     data[i] = temp;
 
-                    this.Dispatcher.Invoke((Action)(() => syncRectanglesToData()), System.Windows.Threading.DispatcherPriority.Render);
-                    Thread.Sleep(ANIMATION_DELAY);
-                    colors[currPivotIndex] = blue;
-
                     currPivotIndex++;
                 }
-
-                colors[i] = blue;
             }
             // swap pivotDatum into the actual pivot index
             //temp = data[indexEnd];
