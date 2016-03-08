@@ -9,8 +9,8 @@ namespace DataStructures
 {
     class List<T> : IEnumerable<T> where T : IComparable<T>
     {
-        private ListNode<T> _head;
-        private ListNode<T> _tail;
+        protected ListNode<T> _head;
+        protected ListNode<T> _tail;
 
         public List()
         {
@@ -85,6 +85,7 @@ namespace DataStructures
             while (curr != null)
             {
                 data.Append(curr.ToString());
+                data.Append(',');
                 curr = curr.Next;
             }
             return data.ToString();
@@ -92,12 +93,51 @@ namespace DataStructures
 
         public IEnumerator<T> GetEnumerator()
         {
-            throw new NotImplementedException();
+            ListNode<T> curr = _head;
+            while (curr != null)
+            {
+                yield return curr.Data;
+                curr = curr.Next;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             throw new NotImplementedException();
+        }
+
+        public T this[int index]
+        {
+            get
+            {
+                int i = 0;
+                //foreach (T item in this)
+                //    if (i++ == index) return item;
+                ListNode<T> curr = _head;
+                while (curr != null)
+                {
+                    if (index == i++)
+                        return curr.Data;
+                    curr = curr.Next;
+                }
+                throw new IndexOutOfRangeException(String.Format("Index {0} out of range.", index));
+            }
+            set
+            {
+
+                int i = 0;
+                ListNode<T> curr = _head;
+                while (curr != null)
+                {
+                    if (index == i++)
+                    {
+                        curr.Data = value;
+                        return;
+                    }
+                    curr = curr.Next;
+                }
+                throw new IndexOutOfRangeException(String.Format("Index {0} out of range.", index));
+            }
         }
 
         public int Length
@@ -230,54 +270,6 @@ namespace DataStructures
         {
             this.InsertRange(index, values);
         }
-
-        //public void Insert(int index, params T[] values)
-        //{
-        //    if (values == null || values.Count() == 0)
-        //        throw new ArgumentException("Values to insert are empty");
-
-        //    int i = 0;
-        //    ListNode<T> curr = _head;
-        //    while (curr != null)
-        //    {
-        //        if (i == index)
-        //        {
-        //            ListNode<T> first, last;
-        //            //createStubList(values, out first, out last);
-        //            first = new ListNode<T>(values[0]); //default constructor puts null in Prev and Next
-        //            ListNode<T> prev = first;
-        //            for (int j = 1; j < values.Length; j++)
-        //            {
-        //                prev.Next = new ListNode<T>(null, prev, values[j]);
-        //                prev = prev.Next;
-        //            }
-        //            last = prev;
-
-        //            if (curr == _head)
-        //            {
-        //                //first.Prev = null; //already done on creation
-        //                last.Next = _head;
-        //                _head.Prev = last;
-        //                _head = first;
-        //            }
-        //            else
-        //            {
-        //                curr.Prev.Next = first;
-        //                first.Prev = curr.Prev;
-        //                last.Next = curr;
-        //                curr.Prev = last;
-        //            }
-        //            return;
-        //        }
-        //        i++;
-        //        curr = curr.Next;
-        //    }
-
-        //    if (i == index) //allow inserting one after Length
-        //        this.AppendRange(values);
-        //    else
-        //        throw new IndexOutOfRangeException(String.Format("Index {0} out of range.", index));
-        //}
         
         public void Remove(T value) //removes first occurrence
         {
@@ -304,7 +296,7 @@ namespace DataStructures
             }
         }
 
-        public void RemoveAt(int index)
+        public T RemoveAt(int index)
         {
             int i = 0;
             ListNode<T> curr = _head;
@@ -312,6 +304,7 @@ namespace DataStructures
             {
                 if (i == index)
                 {
+                    T data = curr.Data;
                     if (curr == _head)
                         _head = curr.Next;
                     else
@@ -324,16 +317,19 @@ namespace DataStructures
                     curr.Prev = null;
                     //garbage will be collected
 
-                    return;
+                    return data;
                 }
                 i++;
                 curr = curr.Next;
             }
+            throw new IndexOutOfRangeException(String.Format("Index {0} out of range.", index));
         }
 
         public void Sort()
         {
-            this.quickSort(_head, _tail);
+            if (_head != null)
+                this.quickSort(_head, _tail);
+            //this will go infinite if there is a loop or if _head and _tail are not correct
         }
 
         private void quickSort(ListNode<T> start, ListNode<T> end)
@@ -358,19 +354,40 @@ namespace DataStructures
             */
 
 
-            //TODO: this was important to the algorithm's termination! how do we know a node isn't after???
-            // maybe it is safe to test end != start || start.prev != end
-            if (indexStart < indexEnd)
+            if (start != end)
             {
-                ListNode<T> paritionNode = quickSortPartition(start, end);
-                quickSort(start, paritionNode.Prev);
-                quickSort(paritionNode.Next, end);
-                //quickSort(indexStart, partitionIndex - 1, ref data, ref colors);
-                //quickSortRecursive(partitionIndex + 1, indexEnd, ref data, ref colors);
+                ListNode<T> partitionNode = quickSortPartition(start, end);
+
+                //smallest data structure that can enter this block is 2
+                //n=2: partition must be either start or end, and start..end are now sorted
+                //     calls quick sort on either start..start or end..end and terminates quickly with no extra tests
+                //n=3: partition into 2 & 1 (2 could be unsorted, but 1 & [2] are sorted to each other
+                //     if partitionNode == start or end, this if..else if properly calls quicksort on the 2 items only
+                //     if partitionNode is middle item, calls quicksort on start..start and end..end and both terminate quickly
+                //n=4: 3&1, 2&2 - shown
+                //n>4: (n-1)&1, (n-2)&2, (n-3)&3 - shown; (n-x)&(n-y) - terminates to 2 or 1
+
+                //start cannot == end due to above condition
+                //this if..else block prevents start < end, and allows above if (start != end) with no other conditions
+                if (partitionNode == end)
+                {
+                    quickSort(start, partitionNode.Prev);
+                }
+                else if (partitionNode == start)
+                {
+                    quickSort(partitionNode.Next, end);
+                }
+                else
+                {
+                    quickSort(start, partitionNode.Prev);
+                    quickSort(partitionNode.Next, end);
+                }
+                //quickSort(indexStart, partitionIndex - 1);
+                //quickSortRecursive(partitionIndex + 1, indexEnd);
             }
         }
 
-        private int quickSortPartition(ListNode<T> start, ListNode<T> end)
+        private ListNode<T> quickSortPartition(ListNode<T> start, ListNode<T> end)
         {
             /*
             partition(A, lo, hi)
@@ -383,33 +400,43 @@ namespace DataStructures
                 swap A[i] with A[hi]
                 return i
             */
-            int temp;
-            int pivotDatum = data[indexEnd]; // save the data magnitude we are using for pivot in a temporary variable (last point chosen as pivotDatum is per "Lomuto partition scheme")
-            int currPivotIndex = indexStart; // index that will become our actual halfway point (all data less than pivotDatum will go before halfway point)
-            for (int i = indexStart; i <= indexEnd - 1; i++) // from indexStart to one less than index of pivotDatum
-            {
-                if (data[i] <= pivotDatum)
-                {
-                    // swap data[j] and data[currPivotIndex]
-                    temp = data[currPivotIndex];
-                    data[currPivotIndex] = data[i];
-                    data[i] = temp;
 
-                    currPivotIndex++;
+            //if (end == null || start == null) //this is a useless test due to conditionals in quickSort()
+            //{
+            //    throw new ArgumentNullException();
+            //}
+
+            //if (start == end) //we do not need this, since quickSortPartition will only be called when start < end
+            //{
+            //    return start;
+            //}
+
+            T temp;
+            T pivotDatum = end.Data; //TODO: since this could be a reference type, is there the possibility that this reference could change? // save the data magnitude we are using for pivot in a temporary variable (last point chosen as pivotDatum is per "Lomuto partition scheme")
+            ListNode<T> currPivotNode = start; // index that will become our actual halfway point (all data less than pivotDatum will go before halfway point)
+            ListNode<T> currNode = start;
+            while (currNode != end) //for (int i = indexStart; i <= indexEnd - 1; i++) // from indexStart to one less than index of pivotDatum
+            {
+                if (currNode.Data.CompareTo(pivotDatum) <= 0)
+                {
+                    // data in currNode and the current pivot point
+                    temp = currPivotNode.Data;
+                    currPivotNode.Data = currNode.Data;
+                    currNode.Data = temp;
+
+                    currPivotNode = currPivotNode.Next;
                 }
+
+                currNode = currNode.Next;
             }
             // swap pivotDatum into the actual pivot index
             //temp = data[indexEnd];
-            data[indexEnd] = data[currPivotIndex];
-            data[currPivotIndex] = pivotDatum; //temp
+            end.Data = currPivotNode.Data;
+            currPivotNode.Data = pivotDatum;
 
-            return currPivotIndex; //inform quick sort we have decided on a pivot index
+            return currPivotNode; //inform quick sort we have decided on a pivot index
         }
-
-        /*
-        theirList.Sort();
-        */
-
+        
         public bool Contains(T value)
         {
             ListNode<T> curr = _head;
@@ -421,41 +448,10 @@ namespace DataStructures
             }
             return false;
         }
-    }
 
-    class ListNode<T>
-    {
-        private ListNode<T> _next;
-        public ListNode<T> Next { get; set; }
-        private ListNode<T> _prev;
-        public ListNode<T> Prev { get; set; }
-        private T _data;
-        public T Data { get; set; }
-
-        public ListNode()
+        public bool isEmpty()
         {
-            _next = null;
-            _prev = null;
-            _data = default(T);
-        }
-
-        public ListNode(T data)
-        {
-            _next = null;
-            _prev = null;
-            _data = data;
-        }
-
-        public ListNode(ListNode<T> next, ListNode<T> prev, T data)
-        {
-            _next = next;
-            _prev = prev;
-            _data = data;
-        }
-
-        public override string ToString()
-        {
-            return _data.ToString();
+            return (_head == null);
         }
     }
 }
