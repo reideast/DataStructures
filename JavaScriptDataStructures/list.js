@@ -1,12 +1,13 @@
 ﻿function List(data) {
-    var head = undefined;
-    var tail = undefined;
+    var head = null;
+    var tail = null;
     this.append = append;
     this.prepend = prepend;
 
-
+    console.log("creating a new list with arguments:"); console.log(arguments);
     if (arguments.length > 0) {
         for (var i = 0; i < arguments.length; ++i) {
+            console.log("arg[" + i + "]=" + arguments[i]);
             if (Array.isArray(arguments[i])) {
                 console.log("appending array:" + arguments[i]);
                 for (var j = 0; j < arguments[i].length; ++j)
@@ -18,21 +19,22 @@
         }
     } //else {
         // no data passed
-        // leave head/tail as undefined
+        // leave head/tail as null
     //}
-    console.log("a list was created: "); console.log(head);
+    console.log("a list was created where head="); console.log(head);
 
     function append(item) {
-        if (head === undefined) {
+        console.log("append(), item=" + item);
+        if (head === null) {
             head = tail = new Node(item);
         } else {
-            tail.next = new Node(item, tail, undefined);
+            tail.next = new Node(item, tail, null);
             tail = tail.next;
         }
     }
     function appendList(list) {
         console.log("appending list:" + list);
-        if (head === undefined) {
+        if (head === null) {
             head = list.head;
             tail = list.tail;
         } else {
@@ -41,10 +43,10 @@
         }
     }
     function prepend(item) {
-        if (head === undefined) {
+        if (head === null) {
             head = tail = new Node(item);
         } else {
-            head.prev = new Node(item, undefined, head);
+            head.prev = new Node(item, null, head);
             head = head.prev;
         }
     }
@@ -53,7 +55,7 @@
         // not going to do a customer StringBuilder since there's no performance gain in every browser except IE6/7: http://www.sitepoint.com/javascript-fast-string-concatenation/
         var s = "";
         var curr = head;
-        while (curr !== undefined) {
+        while (curr !== null) {
             s += curr.data + (curr.next !== undefined ? "," : "");
             curr = curr.next;
         }
