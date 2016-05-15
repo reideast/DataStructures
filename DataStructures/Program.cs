@@ -140,7 +140,7 @@ namespace DataStructures
             theirList.Add(1);
             theirList.Add(1);
             theirList.Add(1);
-            theirList.
+            theirList.Add(1);
 
             var exit = Console.Read(); //DEBUG pause
         }
