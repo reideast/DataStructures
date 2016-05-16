@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataStructures", "DataStructures\DataStructures.csproj", "{A5E2CC55-2599-4E2C-B70D-6C021839E3E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpDataStructures", "DataStructures\CSharpDataStructures.csproj", "{A5E2CC55-2599-4E2C-B70D-6C021839E3E3}"
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "JavaScriptDataStructures", "JavaScriptDataStructures\", "{F22998C3-707E-4CEE-925E-156225F95605}"
 	ProjectSection(WebsiteProperties) = preProject
@@ -23,6 +23,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "JavaScriptDataStructures", 
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "5918"
+		SlnRelativePath = "JavaScriptDataStructures\"
 		DefaultWebSiteLanguage = "Visual C#"
 	EndProjectSection
 EndProject
