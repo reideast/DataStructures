@@ -4,7 +4,7 @@ var para = document.createElement("p");
 var test = new Logger(para);
 container.appendChild(para);
 
-var arr = [0, 1, 2, 3];
+var arr = [1, 2, 3];
 test.log("Testing creation by List by array (" + arr + "): ");
 var list = new List(0, arr);
 test.log("list = " + list);
