@@ -133,3 +133,14 @@ List.prototype.some = function (callback, thisArg) {
     }
     return false;
 }
+List.prototype.forEach = function (callback, thisArg) {
+    if (arguments.length < 2)
+        thisArg = this;
+    var i = 0;
+    var curr = this._head;
+    while (curr !== null) {
+        callback.call(thisArg, curr.data, i, this)
+        ++i;
+        curr = curr.next;
+    }
+}
