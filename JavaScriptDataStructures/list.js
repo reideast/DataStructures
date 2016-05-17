@@ -175,3 +175,17 @@ List.prototype.forEachNode = function (callback, thisArg) {
         curr = curr.next;
     }
 };
+List.prototype.reverse = function () {
+    function swap(node1, node2) {
+        var temp = node1.data;
+        node1.data = node2.data;
+        node2.data = temp;
+    }
+    var front = this._head, back = this._tail;
+    while (front !== back && front.prev !== back) {
+        console.log("swapping: " + front + " & " + back);
+        swap(front, back);
+        front = front.next;
+        back = back.prev;
+    }
+};

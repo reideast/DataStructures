@@ -39,16 +39,22 @@ container.appendChild(test.elem = document.createElement("p"));
 list.push(4);
 test.log("push(4):" + list + " pop()=" + list.pop() + " pop()=" + list.pop() + " finally: " + list);
 
-container.appendChild(test.elem = document.createElement("p"));
-list.forEachNode(function(item) {
-   test.log(item + ","); 
-});
+// container.appendChild(test.elem = document.createElement("p"));
+// list.forEachNode(function(item) {
+//    test.log(item + ","); 
+// });
 
 container.appendChild(test.elem = document.createElement("p"));
 list.reverse();
-test.log("reversed: " + list);
+test.log("reversed (odd length): " + list);
 list.reverse();
 test.log("un-reversed: " + list);
+list.push(4);
+list.reverse()
+test.log("reversed (even length): " + list);
+list.reverse();
+test.log("un-reversed: " + list);
+
 
 container.appendChild(test.elem = document.createElement("p"));
 container.appendChild(test.elem = document.createElement("p"));
