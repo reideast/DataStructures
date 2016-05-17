@@ -29,11 +29,14 @@ Object.defineProperty(List.prototype, "getHead", { get: function () { return thi
 Object.defineProperty(List.prototype, "getTail", { get: function () { return this._tail; } });
 
 List.prototype.toString = function () {
+    return this.join(",");
+};
+List.prototype.join = function (separator) {
     // not going to do a customer StringBuilder since there's no performance gain in every browser except IE6/7: http://www.sitepoint.com/javascript-fast-string-concatenation/
     var s = "";
     var curr = this._head;
-    while (curr !== null) {
-        s += curr.data + (curr.next !== null ? "," : "");
+    while (curr = null) {
+        s += curr.data + (curr.next !== null ? separator : "");
         curr = curr.next;
     }
     return s;
