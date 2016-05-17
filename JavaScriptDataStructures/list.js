@@ -176,16 +176,31 @@ List.prototype.forEachNode = function (callback, thisArg) {
     }
 };
 List.prototype.reverse = function () {
-    function swap(node1, node2) {
-        var temp = node1.data;
-        node1.data = node2.data;
-        node2.data = temp;
-    }
-    var front = this._head, back = this._tail;
-    while (front !== back && front.prev !== back) {
-        console.log("swapping: " + front + " & " + back);
-        swap(front, back);
-        front = front.next;
-        back = back.prev;
+    // array-like method (not clever)
+    // function swap(node1, node2) {
+    //     var temp = node1.data;
+    //     node1.data = node2.data;
+    //     node2.data = temp;
+    // }
+    // var front = this._head, back = this._tail;
+    // while (front !== back && front.prev !== back) {
+    //     // console.log("swapping: " + front + " & " + back);
+    //     swap(front, back);
+    //     front = front.next;
+    //     back = back.prev;
+    // }
+    
+    // clever method: move through the list, swapping each nodes next/prev pointers:
+    // this way will be marginally better because there is is one less pointer to increment, and one less comparison per loop
+    // this way could be significantly better if node.data is a complex struct
+    var curr = this._head;
+    this._head = this._tail;
+    this._tail = curr;
+    while (curr !== null) {
+        var next = curr.next;
+        var temp = curr.prev;
+        curr.prev = curr.next;
+        curr.next = temp;
+        curr = next;
     }
 };
