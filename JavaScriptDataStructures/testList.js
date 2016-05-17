@@ -138,8 +138,8 @@ list = new List(0, 1, 2, 3, 4, 5);
 list.splice(2, 1)
 test.log(" (0, 1, 2, 3, 4, 5).splice(2, 1)=" + list);
 list = new List(0, 1, 2, 3, 4, 5);
-list.splice(2, 2)
-test.log(" (0, 1, 2, 3, 4, 5).splice(2, 2)=" + list);
+var del = list.splice(2, 2)
+test.log(" (0, 1, 2, 3, 4, 5).splice(2, 2)=" + list + " (deleted items=" + del + ")");
 list = new List(0, 1, 2, 3, 4, 5);
 list.splice(2)
 test.log(" (0, 1, 2, 3, 4, 5).splice(2)=" + list);
@@ -153,8 +153,8 @@ list = new List(0, 1, 2, 3, 4, 5);
 list.splice(0, 1)
 test.log(" (0, 1, 2, 3, 4, 5).splice(0, 1)=" + list);
 list = new List(0, 1, 2, 3, 4, 5);
-list.splice(0, 2)
-test.log(" (0, 1, 2, 3, 4, 5).splice(0, 2)=" + list);
+del = list.splice(0, 2)
+test.log(" (0, 1, 2, 3, 4, 5).splice(0, 2)=" + list + " (deleted items=" + del + ")");
 list = new List(0, 1, 2, 3, 4, 5);
 list.splice(0)
 test.log(" (0, 1, 2, 3, 4, 5).splice(0)=" + list);
@@ -171,8 +171,8 @@ list = new List(0, 1, 2, 3, 4, 5);
 list.splice(5, 2)
 test.log(" (0, 1, 2, 3, 4, 5).splice(5, 2)=" + list);
 list = new List(0, 1, 2, 3, 4, 5);
-list.splice(5)
-test.log(" (0, 1, 2, 3, 4, 5).splice(5)=" + list);
+del = list.splice(5)
+test.log(" (0, 1, 2, 3, 4, 5).splice(5)=" + list + " (deleted items=" + del + ")");
 
 container.appendChild(test.elem = document.createElement("p"));
 test.log("Spice including tail:" );
@@ -237,5 +237,5 @@ list = new List(0, 1, 2, 3, 4, 5);
 list.splice(5, 2, 'foo')
 test.log(" (0, 1, 2, 3, 4, 5).splice(5, 2, 'foo')=" + list);
 list = new List(0, 1, 2, 3, 4, 5);
-list.splice(3, 3, 'foo');
-test.log(" (0, 1, 2, 3, 4, 5).splice(3, 3, 'foo')=" + list);
+del = list.splice(3, 3, 'foo');
+test.log(" (0, 1, 2, 3, 4, 5).splice(3, 3, 'foo')=" + list + " (deleted items=" + del + ")");

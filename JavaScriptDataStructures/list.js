@@ -149,7 +149,7 @@ List.prototype.splice = function(begin, deleteCount, itemsToInsert) {
     // empty list (head = tail = null) and also startingAt = null
     //   OK: covered by curr !== null when curr = startingAt
     
-    var deletedItemLsist = new List(); // will either be filled or remain empty if no items are deleted
+    var deletedItemsList = new List(); // will either be filled or remain empty if no items are deleted
     
     var lastToDel = null;
     var curr = startingAt;
