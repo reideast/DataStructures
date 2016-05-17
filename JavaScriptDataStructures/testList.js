@@ -18,7 +18,7 @@ list.prepend(-1);
 test.log("Prepend (-1): " + list);
 
 container.appendChild(test.elem = document.createElement("p"));
-test.log("length: " + list.length());
+test.log("length: " + list.length);
 
 container.appendChild(test.elem = document.createElement("p"));
 test.log("elementAt: [0]=" + list.elementAt(0) + " [5]=" + list.elementAt(5) + " [2]=" + list.elementAt(2));
@@ -35,4 +35,22 @@ test.log("indexOf: -1=" + list.indexOf(-1) + " 0=" + list.indexOf(0) + "10=" + l
 container.appendChild(test.elem = document.createElement("p"));
 test.log("lastIndexof: -1=" + list.lastIndexOf(-1) + " 0=" + list.lastIndexOf(0) + " 10=" + list.lastIndexOf(10) + "'blah'=" + list.indexOf('blah') + " 3=" + list.lastIndexOf(3));
 
+container.appendChild(test.elem = document.createElement("p"));
+list.push(4);
+test.log("push(4):" + list + " pop()=" + list.pop() + " pop()=" + list.pop() + " finally: " + list);
+
+container.appendChild(test.elem = document.createElement("p"));
+list.forEachNode(function(item) {
+   test.log(item + ","); 
+});
+
+container.appendChild(test.elem = document.createElement("p"));
+list.reverse();
+test.log("reversed: " + list);
+list.reverse();
+test.log("un-reversed: " + list);
+
+container.appendChild(test.elem = document.createElement("p"));
+container.appendChild(test.elem = document.createElement("p"));
+container.appendChild(test.elem = document.createElement("p"));
 container.appendChild(test.elem = document.createElement("p"));

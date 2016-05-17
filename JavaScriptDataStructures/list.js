@@ -69,6 +69,7 @@ List.prototype.concat = function (list) {
         this._head = list.getHead;
         this._tail = list.getTail;
     } else {
+        list.getHead.prev = this._tail;
         this._tail.next = list.getHead;
         this._tail = list.getTail;
     }
@@ -158,6 +159,18 @@ List.prototype.forEach = function (callback, thisArg) {
     var curr = this._head;
     while (curr !== null) {
         callback.call(thisArg, curr.data, i, this)
+        ++i;
+        curr = curr.next;
+    }
+};
+List.prototype.forEachNode = function (callback, thisArg) {
+    // this function is largely for DEBUG; I can't see it as good Object Oriented practice to have this normally.
+    if (arguments.length < 2)
+        thisArg = this;
+    var i = 0;
+    var curr = this._head;
+    while (curr !== null) {
+        callback.call(thisArg, curr, i, this)
         ++i;
         curr = curr.next;
     }
