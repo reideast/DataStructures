@@ -4,6 +4,8 @@
 // All arguments that are Arrays will have their elements added (recursively!)
 // All other arguments will be added as single list nodes
 function List(data) {
+    this.length = 0;
+
     // note: these are not actually private properties. but, JS isn't designed to do private (or more importantly, protected) members. see: http://philipwalton.com/articles/implementing-private-and-protected-members-in-javascript/
     // so, pseudo-private members will have to do
     this._head = null;
@@ -32,25 +34,36 @@ List.prototype.toString = function () {
     return this.join(",");
 };
 List.prototype.join = function (separator) {
+    if (arguments.length < 1) separator = ",";
     // not going to do a customer StringBuilder since there's no performance gain in every browser except IE6/7: http://www.sitepoint.com/javascript-fast-string-concatenation/
     var s = "";
     var curr = this._head;
-    while (curr = null) {
-        s += curr.data + (curr.next !== null ? separator : "");
+    while (curr !== null) {
+        s += (curr.data === null || curr.data === undefined ? "" : curr.data) + (curr.next !== null ? separator : "");
         curr = curr.next;
     }
     return s;
 };
 
 List.prototype.append = function (item) {
-    console.log("append(), item=" + item);
     if (this._head === null) {
         this._head = this._tail = new Node(item);
     } else {
         this._tail.next = new Node(item, this._tail, null);
         this._tail = this._tail.next;
     }
-}
+    ++this.length;
+};
+List.prototype.push = function (item) {
+    this.append(item);
+};
+List.prototype.pop = function () {
+    if (this._tail === null) return undefined;
+    var popped = this._tail;
+    this._tail = popped.prev;
+    this._tail.next = null;
+    return popped.data;
+};
 List.prototype.concat = function (list) {
     if (this._head === null) {
         this._head = list.getHead;
@@ -59,7 +72,8 @@ List.prototype.concat = function (list) {
         this._tail.next = list.getHead;
         this._tail = list.getTail;
     }
-}
+    this.length += list.length;
+};
 List.prototype.prepend = function (item) {
     if (this._head === null) {
         this._head = this._tail = new Node(item);
@@ -67,16 +81,17 @@ List.prototype.prepend = function (item) {
         this._head.prev = new Node(item, null, this._head);
         this._head = this._head.prev;
     }
-}
-List.prototype.length = function () {
-    var count = 0;
-    var curr = this._head;
-    while (curr !== null) {
-        ++count;
-        curr = curr.next;
-    }
-    return count;
-}
+    ++this.length;
+};
+//List.prototype.length = function () {
+//    var count = 0;
+//    var curr = this._head;
+//    while (curr !== null) {
+//        ++count;
+//        curr = curr.next;
+//    }
+//    return count;
+//};
 List.prototype.elementAt = function (position) {
     var i = 0;
     var curr = this._head;
@@ -86,7 +101,7 @@ List.prototype.elementAt = function (position) {
         curr = curr.next;
     }
     throw new RangeError("Index out of range.");
-}
+};
 List.prototype.indexOf = function (data) {
     var i = 0;
     var curr = this._head;
@@ -97,7 +112,7 @@ List.prototype.indexOf = function (data) {
         curr = curr.next;
     }
     return -1;
-}
+};
 List.prototype.lastIndexOf = function (data) {
     var i = 0;
     var found = -1;
@@ -109,7 +124,7 @@ List.prototype.lastIndexOf = function (data) {
         curr = curr.next;
     }
     return found;
-}
+};
 List.prototype.every = function (callback, thisArg) {
     if (arguments.length < 2)
         thisArg = this;
@@ -122,7 +137,7 @@ List.prototype.every = function (callback, thisArg) {
         curr = curr.next;
     }
     return true;
-}
+};
 List.prototype.some = function (callback, thisArg) {
     if (arguments.length < 2)
         thisArg = this;
@@ -135,7 +150,7 @@ List.prototype.some = function (callback, thisArg) {
         curr = curr.next;
     }
     return false;
-}
+};
 List.prototype.forEach = function (callback, thisArg) {
     if (arguments.length < 2)
         thisArg = this;
@@ -146,4 +161,4 @@ List.prototype.forEach = function (callback, thisArg) {
         ++i;
         curr = curr.next;
     }
-}
+};
