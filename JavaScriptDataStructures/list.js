@@ -56,12 +56,14 @@ List.prototype.append = function (item) {
 };
 List.prototype.push = function (item) {
     this.append(item);
+    return this.length;
 };
 List.prototype.pop = function () {
     if (this._tail === null) return undefined;
     var popped = this._tail;
     this._tail = popped.prev;
     this._tail.next = null;
+    --this.length;
     return popped.data;
 };
 List.prototype.concat = function (list) {
@@ -84,6 +86,18 @@ List.prototype.prepend = function (item) {
     }
     ++this.length;
 };
+List.prototype.unshift = function(item) {
+    this.prepend(item);
+    return this.length;
+};
+List.prototype.shift = function () {
+    if (this._head === null) return undefined;
+    var removed = this._head;
+    this._head = removed.next;
+    this._head.prev = null;
+    --this.length;
+    return removed.data;
+};
 //List.prototype.length = function () {
 //    var count = 0;
 //    var curr = this._head;
@@ -94,21 +108,26 @@ List.prototype.prepend = function (item) {
 //    return count;
 //};
 List.prototype.elementAt = function (position) {
-    var i = 0;
-    var curr = this._head;
-    while (curr !== null) {
-        if (i++ === position)
-            return curr.data;
-        curr = curr.next;
+    if (position >= 0) {
+        var i = 0;
+        var curr = this._head;
+        while (curr !== null) {
+            if (i++ === position)
+                return curr.data;
+            curr = curr.next;
+        }
     }
     throw new RangeError("Index out of range.");
 };
-List.prototype.indexOf = function (data) {
+List.prototype.indexOf = function (data, fromIndex) {
+    if (arguments.length < 2) fromIndex = 0; // default to searching from first item
+    if (fromIndex < 0) fromIndex = this.length + fromIndex; // negative fromIndex is offset from back of list (but still search front->back)
     var i = 0;
     var curr = this._head;
     while (curr !== null) {
-        if (curr.data === data)
-            return i;
+        if (i >= fromIndex) 
+            if (curr.data === data)
+                return i;
         ++i;
         curr = curr.next;
     }
@@ -204,3 +223,17 @@ List.prototype.reverse = function () {
         curr = next;
     }
 };
+
+List.prototype.map = function(callback, thisArg) {
+    if (arguments.length < 2)
+        thisArg = this;
+    var i = 0;
+    var curr = this._head;
+    var newList = new List();
+    while (curr !== null) {
+        newList.append(callback.call(thisArg, curr.data, i++, this));
+        curr = curr.next;
+    }
+    return newList;
+}
+
