@@ -104,7 +104,7 @@ List.prototype.slice = function(begin, end) {
         begin = 0;
     } else if (begin < 0) {
         begin = this.length + begin; // subtract begin from length
-        if (begin < 0) begin = 0;
+        // if (begin < 0) begin = 0; // dont' need this since index is checked as >= later
     }
     if (arguments.length < 2) {
         end = this.length;
@@ -124,6 +124,72 @@ List.prototype.slice = function(begin, end) {
         ++i;
     }
     return newList;
+}
+
+List.prototype.splice = function(begin, deleteCount, itemsToInsert) {
+    if (arguments.length < 1) {
+        begin = 0;
+    // } else if (begin > this.length) // don't need to check this
+    } else if (begin < 0) {
+        begin = this.length + begin; //subtract
+    }
+    if (arguments.length < 2) {
+        deleteCount = this.length; // would be more precise to compute "length - begin", but don't need to since using < comparison
+    }
+    
+    var i = 0;
+    var startingAt = this._head;
+    while (startingAt !== null) {
+        if (i++ >= begin)
+            break;
+        startingAt = startingAt.next;
+    }
+    //special cases:
+    // begin > this.length therefore startingAt = null
+    // empty list (head = tail = null) and also startingAt = null
+    //   OK: covered by curr !== null when curr = startingAt
+    
+    var lastToDel = null;
+    var curr = startingAt;
+    while (curr !== null && deleteCount-- > 0) {
+        lastToDel = curr;
+        curr = curr.next;
+    }
+    if (lastToDel !== null) { // there were some to delete
+        if (startingAt === this._head) {
+            if (lastToDel === this._tail) { // empty the whole list
+                this._head = this._tail = null;
+                startingAt = null;
+            } else {
+                this._head = lastToDel.next;
+                lastToDel.next.prev = null;
+                startingAt = lastToDel.next;
+            }
+        } else if (lastToDel === this._tail) {
+            this._tail = startingAt.prev; // alrady know that startingAt != head, therefore prev exists
+            startingAt.prev.next = null;
+            startingAt = null;
+        } else {
+            startingAt.prev.next = lastToDel.next;
+            lastToDel.next.prev = startingAt.prev;
+            startingAt = lastToDel.next;
+        }
+    }
+    
+    // insert elements starting at arguments[2]
+    // if (startingAt === null) // means "insert at end of list", and list.append() will work even if list was emptied
+    for (var i = 2; i < arguments.length; ++i)  {
+        if (startingAt === null) {
+            this.append(arguments[i]);
+        } else if (startingAt === this._head) {
+            this.prepend(arguments[i]); // this will only happen once, as prepend() will move the _head pointer
+        } else {
+            var node = new Node(arguments[i], startingAt.prev, startingAt);
+            startingAt.prev.next = node;
+            startingAt.prev = node;
+            ++this.length;
+        }
+    }
 }
 
 //List.prototype.length = function () {

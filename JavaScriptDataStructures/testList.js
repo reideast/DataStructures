@@ -127,3 +127,115 @@ test.log("(0, 1, 2, 3, 4, 5).slice(3)=" + (new List(0, 1, 2, 3, 4, 5)).slice(3))
 test.log(" (0, 1, 2, 3, 4, 5).slice(-2)=" + (new List(0, 1, 2, 3, 4, 5)).slice(-2));
 test.log(" (0, 1, 2, 3, 4, 5).slice(1,4)=" + (new List(0, 1, 2, 3, 4, 5)).slice(1,4));
 test.log(" (0, 1, 2, 3, 4, 5).slice(2,-1)=" + (new List(0, 1, 2, 3, 4, 5)).slice(2,-1));
+
+
+container.appendChild(test.elem = document.createElement("p"));
+test.log("Spice from the middle:" );
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(2, 0);
+test.log(" (0, 1, 2, 3, 4, 5).splice(2, 0)=" + list);
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(2, 1)
+test.log(" (0, 1, 2, 3, 4, 5).splice(2, 1)=" + list);
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(2, 2)
+test.log(" (0, 1, 2, 3, 4, 5).splice(2, 2)=" + list);
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(2)
+test.log(" (0, 1, 2, 3, 4, 5).splice(2)=" + list);
+
+container.appendChild(test.elem = document.createElement("p"));
+test.log("Spice from the head:" );
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(0, 0);
+test.log(" (0, 1, 2, 3, 4, 5).splice(0, 0)=" + list);
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(0, 1)
+test.log(" (0, 1, 2, 3, 4, 5).splice(0, 1)=" + list);
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(0, 2)
+test.log(" (0, 1, 2, 3, 4, 5).splice(0, 2)=" + list);
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(0)
+test.log(" (0, 1, 2, 3, 4, 5).splice(0)=" + list);
+
+container.appendChild(test.elem = document.createElement("p"));
+test.log("Spice starting from the tail:" );
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(5, 0);
+test.log(" (0, 1, 2, 3, 4, 5).splice(5, 0)=" + list);
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(5, 1)
+test.log(" (0, 1, 2, 3, 4, 5).splice(5, 1)=" + list);
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(5, 2)
+test.log(" (0, 1, 2, 3, 4, 5).splice(5, 2)=" + list);
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(5)
+test.log(" (0, 1, 2, 3, 4, 5).splice(5)=" + list);
+
+container.appendChild(test.elem = document.createElement("p"));
+test.log("Spice including tail:" );
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(3, 3);
+test.log(" (0, 1, 2, 3, 4, 5).splice(3, 3)=" + list);
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(3, 4)
+test.log(" (0, 1, 2, 3, 4, 5).splice(3, 4)=" + list);
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(0, 2)
+
+container.appendChild(test.elem = document.createElement("p"));
+test.log("Spice insert single:" );
+list = new List(0, 1, 2);
+list.splice(0, 0, 'foo');
+test.log(" (0, 1, 2).splice(0, 0, 'foo')=" + list);
+list = new List(0, 1, 2);
+list.splice(1, 0, 'foo');
+test.log(" (0, 1, 2).splice(1, 0, 'foo')=" + list);
+list = new List(0, 1, 2);
+list.splice(2, 0, 'foo');
+test.log(" (0, 1, 2).splice(2, 0, 'foo')=" + list);
+list = new List(0, 1, 2);
+list.splice(3, 0, 'foo');
+test.log(" (0, 1, 2).splice(3, 0, 'foo')=" + list);
+list = new List(0, 1, 2);
+list.splice(4, 0, 'foo');
+test.log(" (0, 1, 2).splice(4, 0, 'foo')=" + list);
+
+container.appendChild(test.elem = document.createElement("p"));
+test.log("Spice insert list:" );
+list = new List(0, 1, 2);
+list.splice(0, 0, 'foo', 'bar', 'baz');
+test.log(" (0, 1, 2).splice(0, 0, 'foo', 'bar', 'baz')=" + list);
+list = new List(0, 1, 2);
+list.splice(1, 0, 'foo', 'bar', 'baz');
+test.log(" (0, 1, 2).splice(1, 0, 'foo', 'bar', 'baz')=" + list);
+list = new List(0, 1, 2);
+list.splice(2, 0, 'foo', 'bar', 'baz');
+test.log(" (0, 1, 2).splice(2, 0, 'foo', 'bar', 'baz')=" + list);
+list = new List(0, 1, 2);
+list.splice(3, 0, 'foo', 'bar', 'baz');
+test.log(" (0, 1, 2).splice(3, 0, 'foo', 'bar', 'baz')=" + list);
+list = new List(0, 1, 2);
+list.splice(4, 0, 'foo', 'bar', 'baz');
+test.log(" (0, 1, 2).splice(4, 0, 'foo', 'bar', 'baz')=" + list);
+
+
+container.appendChild(test.elem = document.createElement("p"));
+test.log("Spice delete and insert:" );
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(2, 2, 'foo')
+test.log(" (0, 1, 2, 3, 4, 5).splice(2, 2, 'foo')=" + list);
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(0, 2, 'foo')
+test.log(" (0, 1, 2, 3, 4, 5).splice(0, 2, 'foo')=" + list);
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(0, 20, 'foo')
+test.log(" (0, 1, 2, 3, 4, 5).splice(0, 20, 'foo')=" + list);
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(5, 2, 'foo')
+test.log(" (0, 1, 2, 3, 4, 5).splice(5, 2, 'foo')=" + list);
+list = new List(0, 1, 2, 3, 4, 5);
+list.splice(3, 3, 'foo');
+test.log(" (0, 1, 2, 3, 4, 5).splice(3, 3, 'foo')=" + list);
