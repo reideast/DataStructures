@@ -236,6 +236,19 @@ List.prototype.map = function(callback, thisArg) {
     }
     return newList;
 }
+List.prototype.filter = function(callback, thisArg) {
+    if (arguments.length < 2)
+        thisArg = this;
+    var i = 0;
+    var curr = this._head;
+    var newList = new List();
+    while (curr !== null) {
+        if (callback.call(thisArg, curr.data, i++, this)) 
+            newList.append(curr.data);
+        curr = curr.next;
+    }
+    return newList;
+}
 List.prototype.reduce = function(callback, initalValue) {
     var curr = this._head;
     var i = 0;

@@ -120,4 +120,6 @@ test.log(" every(true, true, true, true)=" + (new List(true, true, true, true)).
 test.log(" every(true, false, true, true)=" + (new List(true, false, true, true)).every(function(item) {return item;}));
 
 container.appendChild(test.elem = document.createElement("p"));
+test.log("(1, 2, 3, 4, 5).filter(item % 2)=" + (new List(1, 2, 3, 4, 5)).filter(function(item) {return item % 2;} ));
+
 container.appendChild(test.elem = document.createElement("p"));
