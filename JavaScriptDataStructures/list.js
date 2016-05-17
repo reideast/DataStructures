@@ -149,13 +149,20 @@ List.prototype.splice = function(begin, deleteCount, itemsToInsert) {
     // empty list (head = tail = null) and also startingAt = null
     //   OK: covered by curr !== null when curr = startingAt
     
+    var deletedItemLsist = new List(); // will either be filled or remain empty if no items are deleted
+    
     var lastToDel = null;
     var curr = startingAt;
+    var actuallyDeleted = 0;
     while (curr !== null && deleteCount-- > 0) {
         lastToDel = curr;
+        actuallyDeleted++;
         curr = curr.next;
     }
     if (lastToDel !== null) { // there were some to delete
+        deletedItemsList._head = startingAt;
+        deletedItemsList._tail = lastToDel;
+        deletedItemsList.length = actuallyDeleted;
         if (startingAt === this._head) {
             if (lastToDel === this._tail) { // empty the whole list
                 this._head = this._tail = null;
@@ -174,6 +181,8 @@ List.prototype.splice = function(begin, deleteCount, itemsToInsert) {
             lastToDel.next.prev = startingAt.prev;
             startingAt = lastToDel.next;
         }
+        deletedItemsList._head.prev = null;
+        deletedItemsList._tail.next = null;
     }
     
     // insert elements starting at arguments[2]
@@ -190,6 +199,8 @@ List.prototype.splice = function(begin, deleteCount, itemsToInsert) {
             ++this.length;
         }
     }
+    
+    return deletedItemsList;
 }
 
 //List.prototype.length = function () {
