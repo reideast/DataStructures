@@ -104,8 +104,14 @@ test.log(" un-reversed: " + list);
 // logNodes();
 
 container.appendChild(test.elem = document.createElement("p"));
-test.log("List(1, 4, 9).map(Math.sqrt)=" + (new List(1, 4, 9)).map(Math.sqrt));
-test.log(" List(1, 2, 3, 4, 5).map(squared)=" + (new List(1, 2, 3, 4, 5)).map(function(item) {return Math.pow(item, 2);}));
+test.log("(1, 4, 9).map(Math.sqrt)=" + (new List(1, 4, 9)).map(Math.sqrt));
+test.log(" (1, 2, 3, 4, 5).map(squared)=" + (new List(1, 2, 3, 4, 5)).map(function(item) {return Math.pow(item, 2);}));
+
+container.appendChild(test.elem = document.createElement("p"));
+test.log("(1,2,3,4).reduce(prev + curr)=" + (new List(1, 2, 3, 4)).reduce(function(prev, item) { return prev + item; }));
+test.log(" (1,2,3,4).reduce(prev * curr)=" + (new List(1, 2, 3, 4)).reduce(function(prev, item) { return prev * item; }));
+test.log(" (1,2,3,4).reduce(prev * curr, inital=0)=" + (new List(1, 2, 3, 4)).reduce(function(prev, item) { return prev * item; },0));
+test.log(" ('hello',' ','world').reduce(prev + curr)=" + (new List('hello',' ','world')).reduce(function(prev, item) { return prev + item; }));
 
 container.appendChild(test.elem = document.createElement("p"));
 test.log("Some(false, false, true, false)=" + (new List(false, false, true, false)).some(function(item) {return item;}));

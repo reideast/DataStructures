@@ -236,4 +236,27 @@ List.prototype.map = function(callback, thisArg) {
     }
     return newList;
 }
-
+List.prototype.reduce = function(callback, initalValue) {
+    var curr = this._head;
+    var i = 0;
+    var prevValue = undefined;
+    
+    // if no ititial value is give, make initialValue the first list item and skip calling the callback func on first item
+    if (arguments.length < 2) {
+        if (curr !== null) {
+            prevValue = curr.data;
+            curr = curr.next;
+        } else {
+            throw new TypeError("Reduce was called on an empty list")
+        }
+    } else {
+        prevValue = initalValue;
+    }
+    console.log("starting loop, prev=" + prevValue)
+    while (curr !== null) {
+        prevValue = callback(prevValue, curr.data, i++, this);
+        console.log("processed " + curr.data + ", prev=" + prevValue)
+        curr = curr.next;
+    }
+    return prevValue;
+}
