@@ -98,6 +98,34 @@ List.prototype.shift = function () {
     --this.length;
     return removed.data;
 };
+
+List.prototype.slice = function(begin, end) {
+    if (arguments.length < 1) {
+        begin = 0;
+    } else if (begin < 0) {
+        begin = this.length + begin; // subtract begin from length
+        if (begin < 0) begin = 0;
+    }
+    if (arguments.length < 2) {
+        end = this.length;
+    } else if (end < 0) {
+        end = this.length + end; // subtract
+    }
+    
+    var i = 0;
+    var curr = this._head;
+    var newList = new List();
+    while (curr !== null) {
+        if (i >= end)
+            break;
+        if (i >= begin)
+            newList.append(curr.data);
+        curr = curr.next;
+        ++i;
+    }
+    return newList;
+}
+
 //List.prototype.length = function () {
 //    var count = 0;
 //    var curr = this._head;
@@ -125,7 +153,7 @@ List.prototype.indexOf = function (data, fromIndex) {
     var i = 0;
     var curr = this._head;
     while (curr !== null) {
-        if (i >= fromIndex) 
+        if (i >= fromIndex)
             if (curr.data === data)
                 return i;
         ++i;

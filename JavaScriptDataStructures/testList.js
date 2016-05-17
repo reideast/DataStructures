@@ -123,3 +123,7 @@ container.appendChild(test.elem = document.createElement("p"));
 test.log("(1, 2, 3, 4, 5).filter(item % 2)=" + (new List(1, 2, 3, 4, 5)).filter(function(item) {return item % 2;} ));
 
 container.appendChild(test.elem = document.createElement("p"));
+test.log("(0, 1, 2, 3, 4, 5).slice(3)=" + (new List(0, 1, 2, 3, 4, 5)).slice(3));
+test.log(" (0, 1, 2, 3, 4, 5).slice(-2)=" + (new List(0, 1, 2, 3, 4, 5)).slice(-2));
+test.log(" (0, 1, 2, 3, 4, 5).slice(1,4)=" + (new List(0, 1, 2, 3, 4, 5)).slice(1,4));
+test.log(" (0, 1, 2, 3, 4, 5).slice(2,-1)=" + (new List(0, 1, 2, 3, 4, 5)).slice(2,-1));
