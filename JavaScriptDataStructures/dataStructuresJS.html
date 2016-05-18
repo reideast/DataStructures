@@ -6,11 +6,18 @@
     <title>Display Data Structures</title>
 </head>
 <body>
-    <div id="testList"></div>
+    <div>
+        <button id="clear" onclick="document.getElementById('testDiv').innerHTML = ''">Clear Output</button>
+        <button id="list" onclick="testList.call(null, 'testDiv')">Test List</button>
+        <button id="tree" onclick="testTree.call(null, 'testDiv')">Test Tree</button>
+    </div>
+    <div id="testDiv"></div>
 
     <script src="node.js"></script>
     <script src="list.js"></script>
     <script src="logger.js"></script>
     <script src="testList.js"></script>
+    <script src="tree.js"></script>
+    <script src="testTree.js"></script>
 </body>
 </html>
