@@ -1,13 +1,10 @@
-function TreeNode(data, left, right) {
+function TreeNode(data, isRed, left, right) {
     this.data = data;
     this.left = left || null;
     this.right = right || null;
-
-    this.walkNode = function (callback) {
-        console.log("walking node:" + this);
-        if (this.left !== null) this.left.walkNode(callback);
-        callback(data);
-        if (this.right !== null) this.right.walkNode(callback);
+    this.red = true;
+    if (arguments.length > 1) {
+        this.red = isRed;
     }
 
     this.insert = function (data) {
@@ -27,18 +24,34 @@ function TreeNode(data, left, right) {
         }
     }
 }
+Object.defineProperty(List.prototype, "black", {
+    get: function () {
+        return !this.red;
+    },
+    set: function (isBlack) {
+        this.red = !isBlack;
+    }
+});
 TreeNode.prototype.toString = function () {
-    return "TREE{" + (this.left === null ? null : "{" + this.left.data + "}") + " << (" + this.data + ") >> " + (this.right === null ? null : "{" + this.right.data + "}") + "}";
+    return "TREE{" + (this.left === null ? null : "{" + this.left.data + "}") + " << (" + this.data + "/" + (this.red ? "RED" : "BLACK") + ") >> " + (this.right === null ? null : "{" + this.right.data + "}") + "}";
 };
+
 
 function Tree(data) {
     this.length = 0;
 
+    var leaf = new TreeNode(null);
     var root = null;
 
 
     this.walkTree = function (callback) {
-        root.walkNode(callback);
+        walkNode(root, callback);
+    }
+    function walkNode(node, callback) {
+        console.log("walking node:" + node);
+        if (node.left !== null) walkNode(node.left, callback);
+        callback(node.data);
+        if (node.right !== null) walkNode(node.right, callback);
     }
 
     this.append = function (item) {
@@ -59,7 +72,7 @@ function Tree(data) {
         for (var i = 0; i < arguments.length; ++i) {
             if (Array.isArray(arguments[i])) {
                 for (var j = 0; j < arguments[i].length; ++j) {
-                    this.concat.call(this, new List(arguments[i][j]));
+                    //this.concat.call(this, new List(arguments[i][j]));
                 }
             } else {
                 this.append(arguments[i]);

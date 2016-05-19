@@ -20,6 +20,11 @@ function testTree(testDiv) {
     test.log("tree = " + tree);
     // logNodes();
 
+    container.appendChild(test.elem = document.createElement("p"));
+    test.log("Testing creation of Tree with pre-blanced list (3, 1, 2, 4, 5): ");
+    tree = new Tree(3, 1, 2, 4, 5);
+    test.log("tree = " + tree);
+    
     // container.appendChild(test.elem = document.createElement("p"));
     // var arr = [1, 2, 3];
     // test.log("Testing creation of Tree by a single array ([" + arr + "]): ");
