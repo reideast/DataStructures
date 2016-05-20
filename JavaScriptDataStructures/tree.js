@@ -8,16 +8,39 @@ function TreeNode(data, isRed, left, right, parent) {
     }
     this.parent = parent || null;
 }
-Object.defineProperty(List.prototype, "black", {
-    get: function () {
-        return !this.red;
+Object.defineProperties(TreeNode.prototype, {
+    "black": {
+        get: function () {
+            return !this.red;
+        },
+        set: function (isBlack) {
+            this.red = !isBlack;
+        },
+        enumerable: true
     },
-    set: function (isBlack) {
-        this.red = !isBlack;
+    "grandparent": {
+        get: function () {
+            if (this.parent) {
+                return this.parent.parent;
+            } else {
+                return null;
+            }
+        }
+    },
+    "uncle": {
+        get: function() {
+            var gp = this.grandparent;
+            if (gp === null)
+                return null;
+            else if (gp.left === this.parent)
+                return gp.right;
+            else
+                return gp.left;
+        }
     }
 });
 TreeNode.prototype.toString = function () {
-    return "TREE{" + (this.left === null ? null : "{" + this.left.data + "}") + " << (" + this.data + "/" + (this.red ? "RED" : "BLACK") + ") >> " + (this.right === null ? null : "{" + this.right.data + "}") + "}";
+    return "NODE{" + (this.left === null ? null : "{" + this.left.data + "}") + " << (" + this.data + "/" + (this.red ? "RED" : "BLACK") + ") >> " + (this.right === null ? null : "{" + this.right.data + "}") + " ^" + (this.parent === null ? null : this.parent.data) + "^}" + " gp:" + (this.grandparent === null ? null : this.grandparent.data) + " uncle:" + (this.uncle === null ? null : this.uncle.data);
 };
 
 
