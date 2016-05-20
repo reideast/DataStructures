@@ -1,4 +1,4 @@
-function TreeNode(data, isRed, left, right) {
+function TreeNode(data, isRed, left, right, parent) {
     this.data = data;
     this.left = left || null;
     this.right = right || null;
@@ -6,23 +6,7 @@ function TreeNode(data, isRed, left, right) {
     if (arguments.length > 1) {
         this.red = isRed;
     }
-
-    this.insert = function (data) {
-        // console.log("inserting:" + data);
-        if (data < this.data) {
-            if (this.left === null) {
-                this.left = new TreeNode(data);
-            } else {
-                this.left.insert(data);
-            }
-        } else {
-            if (this.right === null) {
-                this.right = new TreeNode(data);
-            } else {
-                this.right.insert(data);
-            }
-        }
-    }
+    this.parent = parent || null;
 }
 Object.defineProperty(List.prototype, "black", {
     get: function () {
@@ -39,35 +23,53 @@ TreeNode.prototype.toString = function () {
 
 function Tree(data) {
     this.length = 0;
+    var red = true, black = false;
 
-    var leaf = new TreeNode(null);
-    var root = null;
-
+    var leaf = new TreeNode('leaf', black, null, null);
+    var root = leaf;
 
     this.walkTree = function (callback) {
+        console.log("walking tree with ROOT:" + root.toString());
         walkNode(root, callback);
     }
     function walkNode(node, callback) {
         console.log("walking node:" + node);
-        if (node.left !== null) walkNode(node.left, callback);
+        if (node.left !== leaf) walkNode(node.left, callback);
         callback(node.data);
-        if (node.right !== null) walkNode(node.right, callback);
+        if (node.right !== leaf) walkNode(node.right, callback);
     }
 
     this.append = function (item) {
         console.log("appending:" + item);
-        if (root === null) {
-            root = new TreeNode(item);
+        if (root === leaf) {
+            root = new TreeNode(item, black, leaf, leaf, null);
         } else {
-            root.insert(item);
+            insertBelowNode(root, item);
         }
     };
+    function insertBelowNode(node, data) {
+        // console.log("inserting:" + data);
+        if (data < node.data) {
+            if (node.left === leaf) {
+                node.left = new TreeNode(data, red, leaf, leaf, node);
+            } else {
+                insertBelowNode(node.left, data);
+            }
+        } else {
+            if (node.right === leaf) {
+                node.right = new TreeNode(data, red, leaf, leaf, node);
+            } else {
+                insertBelowNode(node.right, data);
+            }
+        }
+    }
 
     this.rootToString = function () {
         return root.toString();
     }
 
 
+    // Constructor functionality: 
     if (arguments.length > 0) {
         for (var i = 0; i < arguments.length; ++i) {
             if (Array.isArray(arguments[i])) {
@@ -80,7 +82,9 @@ function Tree(data) {
         }
     }
 }
-Object.defineProperty(List.prototype, "getRoot", { get: function () { return this.rootToString(); } });
+
+Object.defineProperty(Tree.prototype, "getRoot", { get: function () { return this.rootToString(); } });
+
 Tree.prototype.toString = function () {
     var s = "";
     this.walkTree(function (item) {
