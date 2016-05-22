@@ -89,6 +89,8 @@ function Tree(data) {
         }
     }
     function repairTree(node) { // note: the Red-Black Tree algorithm __only__ calls this on Red nodes! ie. called for new nodes, or called recursively after setting a node to Red
+        console.log("repair:" + node);
+//TODO: current bug has something to do with root not pointing correctly (after repair? after insert? (no, b/c insertBelowNode() never inserts at root...))
         if (node === root) { // Red-Black Insertion - Case 1: New node is root - must be black
             node.black = true;
             return; // returning here explicitly in order to break the if-elsif chain below to save u and gp
@@ -122,8 +124,20 @@ function Tree(data) {
         // there was no explicit return for case 4, therefore Case 5 can be examined after case 4's modifications
         
         // Red-Black Insertion - Case 5: Parent is red, but uncle is black, and nodes are position so we can simply rotate grandparent
+        // TODO: why can we assume node.parent isn't null?
+        //   if Case 4 was performed, then node is now pointing to the same level that node was before.
+        //   more importantly, parent exists (Case 1) and parent's color is red (Case 2). If parent is red, then it cannot be root, therefore a grandparent must exist!
+        node.parent.black = true;
+        gp = node.grandparent; //reset this, since node would be pointing to a different node if Case 4 was performed
+        gp.red = true;
+        if (node.parent.left === node) {
+            rotateRight(gp);
+        } else {
+            rotateLeft(gp);
+        }
     }
     function rotateLeft(node) {
+        //TODO: chart these to make sure ALL pointers (child and parent) are actually redefined correctly
         var parent = node.parent;
         var newNode = node.right;
         
@@ -135,14 +149,39 @@ function Tree(data) {
         newNode.left.parent = newNode;
         //newNode.right is unchanged
         
-        if (parent.left === node)
-            parent.left = newNode;
-        else
-            parent.right = newNode;
-        newNode.parent = parent;
+        if (parent !== null) {
+            if (parent.left === node)
+                parent.left = newNode;
+            else
+                parent.right = newNode;
+            newNode.parent = parent;
+        } else {
+            newNode.parent = null;
+            this.root = newNode;
+        }
     }
     function rotateRight(node) {
+        var parent = node.parent;
+        var newNode = node.right;
         
+        node.left = newNode.right;
+        node.left.parent = node;
+        //node.right is unchanged
+        
+        //newnode.left is unchanged
+        newNode.right = node;
+        newNode.right.parent = newNode;
+        
+        if (parent !== null) {
+            if (parent.left === node)
+                parent.left = newNode;
+            else
+                parent.right = newNode;
+            newNode.parent = parent;
+        } else {
+            newNode.parent = null;
+            this.root = newNode;
+        }
     }
 
     this.rootToString = function () {
