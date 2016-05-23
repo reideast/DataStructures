@@ -56,7 +56,7 @@ function Tree(data) {
         walkNode(root, callback);
     }
     function walkNode(node, callback) {
-        console.log("walking:" + node);
+        // console.log("walking:" + node);
         if (node.left !== leaf) walkNode(node.left, callback);
         callback(node.data);
         if (node.right !== leaf) walkNode(node.right, callback);
@@ -93,7 +93,6 @@ function Tree(data) {
     }
     function repairTree(node) { // note: the Red-Black Tree algorithm __only__ calls this on Red nodes! ie. called for new nodes, or called recursively after setting a node to Red
         console.log("repair:" + node);
-//TODO: current bug has something to do with root not pointing correctly (after repair? after insert? (no, b/c insertBelowNode() never inserts at root...))
         if (node === root) { // Red-Black Insertion - Case 1: New node is root - must be black
             console.log("Case 1 - repairing root");
             node.black = true;
@@ -198,8 +197,48 @@ function Tree(data) {
     this.rootToString = function () {
         return root.toString();
     }
-
-
+    
+    this.dataExists = function (data) {
+        if (getNode(root, function(item) {
+            console.log("testFunctioning " + data + " ? " + item);
+            if (data < item) {
+                return -1;
+            } else if (data == item) {
+                return 0;
+            } else {
+                return 1;
+            }
+        }) !== null) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+    
+    // a search function, starting at node, which uses a test function to determine relationships between data nodes
+    // getNode will return the node for which testFunction returns 0
+    // or null if not found
+    // testFunction should take one argument, the current node.data
+    // testFunction should return 0 for equals, -1 for less than, and 1 for greater than
+    function getNode(node, testFunction) {
+        var result = testFunction(node.data);
+        console.log("testing:" + node + ", result=" + result);
+        if (result < 0) {
+            if (node.left !== leaf) {
+                return getNode(node.left, testFunction);
+            } else {
+                return null;
+            }
+        } else if ( result === 0) {
+            return node;
+        } else {
+            if (node.right !== leaf) {
+                return getNode(node.right, testFunction);
+            } else {
+                return null;
+            }
+        }
+    }
 
     // Constructor functionality: 
     if (arguments.length > 0) {

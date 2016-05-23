@@ -40,8 +40,10 @@ function testTree(testDiv) {
     test.log("Testing creation of Tree with very large random array [" + arr + "]: ");
     tree = new Tree(arr);
     test.log("tree = " + tree);
-    var sorted = tree.toArray();
+    
+    container.appendChild(test.elem = document.createElement("p"));
     test.log("testing that sorted array does increase with each item:");
+    var sorted = tree.toArray();
     var deltas = sorted.map(function(item, i, arr) {
         if (i == 0) {
             return ">";
@@ -56,6 +58,10 @@ function testTree(testDiv) {
         }
     });
     test.log(deltas);
+    
+    container.appendChild(test.elem = document.createElement("p"));
+    test.log("testing searching array if a value exists (50): ");
+    test.log(tree.dataExists(50));
     
     // container.appendChild(test.elem = document.createElement("p"));
     // var arr = [1, 2, 3];
