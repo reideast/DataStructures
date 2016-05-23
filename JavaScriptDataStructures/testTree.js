@@ -21,9 +21,41 @@ function testTree(testDiv) {
     // logNodes();
 
     container.appendChild(test.elem = document.createElement("p"));
-    test.log("Testing creation of Tree with pre-blanced list (3, 1, 2, 4, 5): ");
-    tree = new Tree(3, 1, 2, 4, 5);
+    test.log("Testing creation of Tree with disorderd array [3, 1, 2, 4, 5]: ");
+    tree = new Tree([3, 1, 2, 4, 5]);
     test.log("tree = " + tree);
+    
+    container.appendChild(test.elem = document.createElement("p"));
+    var arr = [14, 4, 5, 1, 16, 17, 10, 9, 20, 15];
+    test.log("Testing creation of Tree with random array [" + arr + "]: ");
+    tree = new Tree(arr);
+    test.log("tree = " + tree);
+    
+    container.appendChild(test.elem = document.createElement("p"));
+    arr = [];
+    var limit = 100;
+    for (var i = 0; i < limit; ++i) {
+        arr.push(Math.floor(Math.random() * limit + 1));
+    }
+    test.log("Testing creation of Tree with very large random array [" + arr + "]: ");
+    tree = new Tree(arr);
+    test.log("tree = " + tree);
+    var sorted = tree.toArray();
+    test.log("testing that sorted array does increase with each item:");
+    var deltas = sorted.map(function(item, i, arr) {
+        if (i == 0) {
+            return ">";
+        } else {
+            if (item === arr[i - 1]) {
+                return "0";
+            } else if (item > arr[i - 1]) {
+                return "^";
+            } else {
+                return "!!"
+            }
+        }
+    });
+    test.log(deltas);
     
     // container.appendChild(test.elem = document.createElement("p"));
     // var arr = [1, 2, 3];

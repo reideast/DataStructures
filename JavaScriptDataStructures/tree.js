@@ -52,11 +52,11 @@ function Tree(data) {
     var root = leaf;
 
     this.walkTree = function (callback) {
-        // console.log("walking tree with ROOT:" + root.toString());
+        console.log("walking tree with ROOT {" + root.data + "}");
         walkNode(root, callback);
     }
     function walkNode(node, callback) {
-        console.log("walking node:" + node);
+        console.log("walking:" + node);
         if (node.left !== leaf) walkNode(node.left, callback);
         callback(node.data);
         if (node.right !== leaf) walkNode(node.right, callback);
@@ -67,27 +67,27 @@ function Tree(data) {
         if (root === leaf) {
             root = new TreeNode(item, black, leaf, leaf, null); // Red-Black Insertion - Case 1: New node is root - no properties violated
         } else {
-            insertBelowNode.call(this, root, item);
+            insertBelowNode(root, item);
         }
         this.length += 1;
-        console.log("append done, tree is:  ");
-        console.log("" + this); // "" + is to force JS engine to use overloaded toString(), not it's own object print method
+        // console.log("append done, tree is:  ");
+        // console.log("" + this); // "" + is to force JS engine to use overloaded toString(), not it's own object print method
     };
     function insertBelowNode(node, data) {
         // console.log("inserting:" + data);
-        if (data < node.data) {
+        if (data < node.data) { // TODO: replace explicit "<" comparison with a compare() function passed to constructor (maybe even optional; falls back to "<"?)
             if (node.left === leaf) {
                 node.left = new TreeNode(data, red, leaf, leaf, node);
-                repairTree.call(this, node.left);
+                repairTree(node.left);
             } else {
-                insertBelowNode.call(this, node.left, data);
+                insertBelowNode(node.left, data);
             }
         } else {
             if (node.right === leaf) {
                 node.right = new TreeNode(data, red, leaf, leaf, node);
-                repairTree.call(this, node.right);
+                repairTree(node.right);
             } else {
-                insertBelowNode.call(this, node.right, data);
+                insertBelowNode(node.right, data);
             }
         }
     }
@@ -113,45 +113,40 @@ function Tree(data) {
             u.black = true;
             //change grandparent to red
             gp.red = true;
-            repairTree.call(this, gp);
+            repairTree(gp);
             return; //explicit return here to show logical grouping of case 4
         }
         
         // Red-Black Insertion - Case 4: Parent is red, but uncle is black and can't simply rotate grandparent - fix by rotating node.parent downward and node into it's spot, and then recursively repairing node.parent (now a child)
         if (node.parent.right === node && gp.left === node.parent) { // left-hand Case 4: node is right sibling, parent is left sibling
             console.log("Case 4 - rotate left");
-            rotateLeft.call(this, node.parent);
-            console.log("rotation fin. tree is now:");
-            console.log("" + this);
+            rotateLeft(node.parent);
             // redefine var node to point at what used to be it's parent, and has now been rotated down to be node's left child. therefore Case 5 will examine the previous parent
-            console.log("node was:" + node);
             node = node.left;
-            console.log("node is:" + node);
         } else if (node.parent.left === node && gp.right === node.parent) { // right hand Case 4: node is left sibling, parent is right sibling
             console.log("Case 4 - rotate right");
-            rotateRight.call(this, node.parent);
+            rotateRight(node.parent);
             // redefine var node to previous parent 
             node = node.right;
         }
         // there was no explicit return for case 4, therefore Case 5 can be examined after case 4's modifications
         
         // Red-Black Insertion - Case 5: Parent is red, but uncle is black, and nodes are position so we can simply rotate grandparent
-        // TODO: why can we assume node.parent isn't null?
-        //   if Case 4 was performed, then node is now pointing to the same level that node was before.
-        //   more importantly, parent exists (Case 1) and parent's color is red (Case 2). If parent is red, then it cannot be root, therefore a grandparent must exist!
+        // NOTE: why can we assume node.parent isn't null?
+        //   * if Case 4 was performed, then node is now pointing to the same level that node was before.
+        //   * more importantly, parent exists (Case 1) and parent's color is red (Case 2). If parent is red, then it cannot be root, therefore a grandparent must exist!
         node.parent.black = true;
-        gp = node.grandparent; //reset this, since node would be pointing to a different node if Case 4 was performed
+        gp = node.grandparent; //reset gp pointer, since node would be pointing to a different node if Case 4 was performed
         gp.red = true;
         if (node.parent.left === node) {
             console.log("Case 5 - rotate grandparent right");
-            rotateRight.call(this, gp);
+            rotateRight(gp);
         } else {
             console.log("Case 5 - rotate grandparent left");
-            rotateLeft.call(this, gp);
+            rotateLeft(gp);
         }
     }
     function rotateLeft(node) {
-        //TODO: chart these to make sure ALL pointers (child and parent) are actually redefined correctly
         var parent = node.parent;
         var newNode = node.right;
         
@@ -171,10 +166,8 @@ function Tree(data) {
             }
             newNode.parent = parent;
         } else {
-            console.log("root=" + root);
             newNode.parent = null;
             root = newNode;
-            console.log("root=" + root);
         }
     }
     function rotateRight(node) {
@@ -213,7 +206,7 @@ function Tree(data) {
         for (var i = 0; i < arguments.length; ++i) {
             if (Array.isArray(arguments[i])) {
                 for (var j = 0; j < arguments[i].length; ++j) {
-                    //this.concat.call(this, new List(arguments[i][j]));
+                    this.append(arguments[i][j]); //TODO: should there be functionality to look deeper? or should the constructor be simple, only examining one level of array
                 }
             } else {
                 this.append(arguments[i]);
@@ -230,4 +223,12 @@ Tree.prototype.toString = function () {
         s += item + " ";
     });
     return s;
+};
+
+Tree.prototype.toArray = function () {
+  var arr = [];
+  this.walkTree(function (item) {
+      arr.push(item);
+  });
+  return arr;
 };
