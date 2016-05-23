@@ -48,11 +48,11 @@ function Tree(data) {
     this.length = 0;
     var red = true, black = false;
 
-    var leaf = new TreeNode('leaf', black, null, null);
+    var leaf = new TreeNode('leaf', black, null, null, null);
     var root = leaf;
 
     this.walkTree = function (callback) {
-        console.log("walking tree with ROOT:" + root.toString());
+        // console.log("walking tree with ROOT:" + root.toString());
         walkNode(root, callback);
     }
     function walkNode(node, callback) {
@@ -67,24 +67,27 @@ function Tree(data) {
         if (root === leaf) {
             root = new TreeNode(item, black, leaf, leaf, null); // Red-Black Insertion - Case 1: New node is root - no properties violated
         } else {
-            insertBelowNode(root, item);
+            insertBelowNode.call(this, root, item);
         }
+        this.length += 1;
+        console.log("append done, tree is:  ");
+        console.log("" + this); // "" + is to force JS engine to use overloaded toString(), not it's own object print method
     };
     function insertBelowNode(node, data) {
         // console.log("inserting:" + data);
         if (data < node.data) {
             if (node.left === leaf) {
                 node.left = new TreeNode(data, red, leaf, leaf, node);
-                repairTree(node.left);
+                repairTree.call(this, node.left);
             } else {
-                insertBelowNode(node.left, data);
+                insertBelowNode.call(this, node.left, data);
             }
         } else {
             if (node.right === leaf) {
                 node.right = new TreeNode(data, red, leaf, leaf, node);
-                repairTree(node.right);
+                repairTree.call(this, node.right);
             } else {
-                insertBelowNode(node.right, data);
+                insertBelowNode.call(this, node.right, data);
             }
         }
     }
@@ -92,9 +95,11 @@ function Tree(data) {
         console.log("repair:" + node);
 //TODO: current bug has something to do with root not pointing correctly (after repair? after insert? (no, b/c insertBelowNode() never inserts at root...))
         if (node === root) { // Red-Black Insertion - Case 1: New node is root - must be black
+            console.log("Case 1 - repairing root");
             node.black = true;
             return; // returning here explicitly in order to break the if-elsif chain below to save u and gp
         } else if (node.parent.black) { // Red-Black Insertion - Case 2: Parent of new node is black - no properites violated
+            console.log("Case 2 - parent is already black");
             return; // do nothing
         }
         
@@ -102,22 +107,29 @@ function Tree(data) {
         var u = node.uncle;
         var gp = node.grandparent;
         if (u !== null && u.red) { // Red-Black Insertion - Case 3: Both Parent and Uncle are red
+            console.log("Case 3 - parent and uncle are red, so make them black, grandparent red and recurse on grandparent");
             //change both parent and uncle to black
             node.parent.black = true;
             u.black = true;
             //change grandparent to red
             gp.red = true;
-            repairTree(gp);
+            repairTree.call(this, gp);
             return; //explicit return here to show logical grouping of case 4
         }
         
         // Red-Black Insertion - Case 4: Parent is red, but uncle is black and can't simply rotate grandparent - fix by rotating node.parent downward and node into it's spot, and then recursively repairing node.parent (now a child)
         if (node.parent.right === node && gp.left === node.parent) { // left-hand Case 4: node is right sibling, parent is left sibling
-            rotateLeft(node.parent);
+            console.log("Case 4 - rotate left");
+            rotateLeft.call(this, node.parent);
+            console.log("rotation fin. tree is now:");
+            console.log("" + this);
             // redefine var node to point at what used to be it's parent, and has now been rotated down to be node's left child. therefore Case 5 will examine the previous parent
+            console.log("node was:" + node);
             node = node.left;
+            console.log("node is:" + node);
         } else if (node.parent.left === node && gp.right === node.parent) { // right hand Case 4: node is left sibling, parent is right sibling
-            rotateRight(node.parent);
+            console.log("Case 4 - rotate right");
+            rotateRight.call(this, node.parent);
             // redefine var node to previous parent 
             node = node.right;
         }
@@ -131,9 +143,11 @@ function Tree(data) {
         gp = node.grandparent; //reset this, since node would be pointing to a different node if Case 4 was performed
         gp.red = true;
         if (node.parent.left === node) {
-            rotateRight(gp);
+            console.log("Case 5 - rotate grandparent right");
+            rotateRight.call(this, gp);
         } else {
-            rotateLeft(gp);
+            console.log("Case 5 - rotate grandparent left");
+            rotateLeft.call(this, gp);
         }
     }
     function rotateLeft(node) {
@@ -150,19 +164,22 @@ function Tree(data) {
         //newNode.right is unchanged
         
         if (parent !== null) {
-            if (parent.left === node)
+            if (parent.left === node) {
                 parent.left = newNode;
-            else
+            } else {
                 parent.right = newNode;
+            }
             newNode.parent = parent;
         } else {
+            console.log("root=" + root);
             newNode.parent = null;
-            this.root = newNode;
+            root = newNode;
+            console.log("root=" + root);
         }
     }
     function rotateRight(node) {
         var parent = node.parent;
-        var newNode = node.right;
+        var newNode = node.left;
         
         node.left = newNode.right;
         node.left.parent = node;
@@ -173,14 +190,15 @@ function Tree(data) {
         newNode.right.parent = newNode;
         
         if (parent !== null) {
-            if (parent.left === node)
+            if (parent.left === node) {
                 parent.left = newNode;
-            else
+            } else {
                 parent.right = newNode;
+            }
             newNode.parent = parent;
         } else {
             newNode.parent = null;
-            this.root = newNode;
+            root = newNode;
         }
     }
 
