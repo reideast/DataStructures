@@ -43,9 +43,29 @@ TreeNode.prototype.toString = function () {
     return "NODE{" + (this.left === null ? null : "{" + this.left.data + "}") + " << (" + this.data + "/" + (this.red ? "RED" : "BLACK") + ") >> " + (this.right === null ? null : "{" + this.right.data + "}") + " ^" + (this.parent === null ? null : this.parent.data) + "^}" + " gp:" + (this.grandparent === null ? null : this.grandparent.data) + " uncle:" + (this.uncle === null ? null : this.uncle.data);
 };
 
-
-function Tree(data) {
+// compare is an optional function which takes two objects of data stored in nodes, and must return:
+//  1. a value less than 0 if the first is ordered lower,
+//  2. 0 if they are equal
+//  3. a value > 0 if the first is ordered higher
+// if compare is not provided, then is will be substituded by the operators: <, ==, and > 
+function Tree(data, compareFunction) {
     this.length = 0;
+    
+    var compare;
+    if (arguments.length > 1 && typeof compareFunction === "function") {
+        compare = compareFunction;
+    } else {
+        compare = function(a, b) {
+            if (a == b) {
+                return 0;
+            } else if (a < b) {
+                return -1;
+            } else { // (a > b)
+                return 1;
+            }
+        };
+    }
+    
     var red = true, black = false;
 
     var leaf = new TreeNode('leaf', black, null, null, null);
@@ -75,7 +95,7 @@ function Tree(data) {
     };
     function insertBelowNode(node, data) {
         // console.log("inserting:" + data);
-        if (data < node.data) { // TODO: replace explicit "<" comparison with a compare() function passed to constructor (maybe even optional; falls back to "<"?)
+        if (compare(data, node.data) < 0) { // DONE: replace explicit "<" comparison with a compare() function passed to constructor (maybe even optional; falls back to "<"?)
             if (node.left === leaf) {
                 node.left = new TreeNode(data, red, leaf, leaf, node);
                 repairTree(node.left);
@@ -199,16 +219,7 @@ function Tree(data) {
     }
     
     this.dataExists = function (data) {
-        if (getNode(root, function(item) {
-            console.log("testFunctioning " + data + " ? " + item);
-            if (data < item) {
-                return -1;
-            } else if (data == item) {
-                return 0;
-            } else {
-                return 1;
-            }
-        }) !== null) {
+        if (getNode(root, data) !== null) {
             return true;
         } else {
             return false;
@@ -216,16 +227,14 @@ function Tree(data) {
     };
     
     // a search function, starting at node, which uses a test function to determine relationships between data nodes
-    // getNode will return the node for which testFunction returns 0
+    // getNode will return the node for which compare() to needle returns 0
     // or null if not found
-    // testFunction should take one argument, the current node.data
-    // testFunction should return 0 for equals, -1 for less than, and 1 for greater than
-    function getNode(node, testFunction) {
-        var result = testFunction(node.data);
+    function getNode(node, needle) {
+        var result = compare(needle, node.data);
         console.log("testing:" + node + ", result=" + result);
         if (result < 0) {
             if (node.left !== leaf) {
-                return getNode(node.left, testFunction);
+                return getNode(node.left, needle);
             } else {
                 return null;
             }
@@ -233,7 +242,7 @@ function Tree(data) {
             return node;
         } else {
             if (node.right !== leaf) {
-                return getNode(node.right, testFunction);
+                return getNode(node.right, needle);
             } else {
                 return null;
             }
