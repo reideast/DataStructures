@@ -226,6 +226,18 @@ function Tree(data, compareFunction) {
         }
     };
     
+    // a function to return a piece of data stored in the tree
+    // this is useful in situations where data is a complex type,
+    // and the compare function only examines part of the object to order it
+    this.find = function (data) {
+        var found = getNode(root, data);
+        if (found !== null) {
+            return found.data;
+        } else {
+            return null;
+        }
+    }
+    
     // a search function, starting at node, which uses a test function to determine relationships between data nodes
     // getNode will return the node for which compare() to needle returns 0
     // or null if not found
