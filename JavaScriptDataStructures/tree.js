@@ -51,11 +51,7 @@ TreeNode.prototype.toString = function () {
 function Tree(data, compareFunction) {
     this.length = 0;
     
-    var compare;
-    if (arguments.length > 1 && typeof compareFunction === "function") {
-        compare = compareFunction;
-    } else {
-        compare = function(a, b) {
+    var compare = function(a, b) {
             if (a == b) {
                 return 0;
             } else if (a < b) {
@@ -63,8 +59,23 @@ function Tree(data, compareFunction) {
             } else { // (a > b)
                 return 1;
             }
-        };
-    }
+    };
+    
+    // moved this functionality to the construtory arguments-examining loop
+    // var compare;
+    // if (arguments.length > 1 && typeof compareFunction === "function") {
+    //     compare = compareFunction;
+    // } else {
+    //     compare = function(a, b) {
+    //         if (a == b) {
+    //             return 0;
+    //         } else if (a < b) {
+    //             return -1;
+    //         } else { // (a > b)
+    //             return 1;
+    //         }
+    //     };
+    // }
     
     var red = true, black = false;
 
@@ -264,6 +275,10 @@ function Tree(data, compareFunction) {
     // Constructor functionality: 
     if (arguments.length > 0) {
         for (var i = 0; i < arguments.length; ++i) {
+            if (i === arguments.length - 1 && typeof arguments[i] === "function") {
+                compare = compareFunction;
+                break; //loop is done anway, this just skips adding compareFunction as a data node
+            }
             if (Array.isArray(arguments[i])) {
                 for (var j = 0; j < arguments[i].length; ++j) {
                     this.append(arguments[i][j]); //TODO: should there be functionality to look deeper? or should the constructor be simple, only examining one level of array

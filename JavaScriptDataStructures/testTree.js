@@ -63,6 +63,30 @@ function testTree(testDiv) {
     test.log("testing searching array if a value exists (50): ");
     test.log(tree.dataExists(50));
     
+    container.appendChild(test.elem = document.createElement("p"));
+    function Person(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+    Person.prototype.toString = function () {
+        return this.name + " - " + this.age + " years";
+    }
+    var compareAges = function (a, b) {
+        if (a.age < b.age) {
+            return -1;
+        }  else if (a.age > b.age) {
+            return 1;
+        } else {
+            return 0;
+        }
+    };
+    var people = [new Person("Rebecca", 32), new Person("Andrew", 30), new Person("Ruthi", 27)];
+    var sortedPeople = new Tree(people, compareAges);
+    var found = sortedPeople.find(32);
+    test.log("Testing a custom compare function (sort by ages) with array: " + people);
+    test.log(" Tree (sorted by age, ascending): " + sortedPeople);
+    test.log(" Found Person with age == 32: " + found);
+    
     // container.appendChild(test.elem = document.createElement("p"));
     // var arr = [1, 2, 3];
     // test.log("Testing creation of Tree by a single array ([" + arr + "]): ");
