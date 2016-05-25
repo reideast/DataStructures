@@ -61,7 +61,7 @@ function testTree(testDiv) {
     
     container.appendChild(test.elem = document.createElement("p"));
     test.log("testing searching array if a value exists (50): ");
-    test.log(tree.dataExists(50));
+    test.log(tree.exists(50));
     
     container.appendChild(test.elem = document.createElement("p"));
     function Person(name, age) {

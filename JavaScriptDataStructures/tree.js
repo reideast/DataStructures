@@ -92,7 +92,9 @@ function Tree(data, compareFunction) {
         callback(node.data);
         if (node.right !== leaf) walkNode(node.right, callback);
     }
-
+    
+    // TODO: this.concat or this.appendArray
+    
     this.append = function (item) {
         console.log("appending:" + item);
         if (root === leaf) {
@@ -224,12 +226,46 @@ function Tree(data, compareFunction) {
             root = newNode;
         }
     }
-
-    this.rootToString = function () {
-        return root.toString();
+   
+    this.delete = function (data) {
+        var found = getNode(root, data);
+        if (found !== null) {
+            console.log("Deleting node with data (" + data + "): " + found);
+            deleteNode(found);
+        } else {
+            console.log("Data (" + data + ") was not found to delete.");
+        }
+    };
+    function deleteNode(node) {
+        if (node === null) {
+            console.log("Error: Tried to deleteNode on null");
+        } else if (node === leaf) {
+            console.log("Error: Tried to deleteNode on sentinel leaf");
+        } else if (node.left === leaf && node.right === leaf) {
+            replaceMe(node, leaf);
+        } else if (node.left === leaf) { // acting as XOR, since we already know that L && L is not already the case
+            replaceMe(node, node.right);
+        } else if (node.right === leaf) { // XOR
+            replaceMe(node, node.left);
+        } else { //node has two children
+            
+        }
     }
-    
-    this.dataExists = function (data) {
+    function replaceMe(node, replacement) {
+        if (node === root) {
+            root = replacement;
+            replacement.parent = null;
+        } else {
+            replacement.parent = node.parent;
+            if (node.parent.left === node) {
+                node.parent.left = replacement;
+            } else {
+                node.parent.right = replacement;
+            }
+        }
+    }
+
+    this.exists = function (data) {
         if (getNode(root, data) !== null) {
             return true;
         } else {
@@ -254,7 +290,6 @@ function Tree(data, compareFunction) {
     // or null if not found
     function getNode(node, needle) {
         var result = compare(needle, node.data);
-        console.log("testing:" + node + ", result=" + result);
         if (result < 0) {
             if (node.left !== leaf) {
                 return getNode(node.left, needle);
@@ -289,8 +324,6 @@ function Tree(data, compareFunction) {
         }
     }
 }
-
-Object.defineProperty(Tree.prototype, "getRoot", { get: function () { return this.rootToString(); } });
 
 Tree.prototype.toString = function () {
     var s = "";
