@@ -106,6 +106,12 @@ function Tree(data, compareFunction) {
         // console.log("append done, tree is:  ");
         // console.log("" + this); // "" + is to force JS engine to use overloaded toString(), not it's own object print method
     };
+    this.appendArray = function (arr) {
+        for (var i = 0; i < arr.length; ++i) {
+            this.append(arr[i]);
+        }
+    };
+    
     function insertBelowNode(node, data) {
         // console.log("inserting:" + data);
         if (compare(data, node.data) < 0) { // DONE: replace explicit "<" comparison with a compare() function passed to constructor (maybe even optional; falls back to "<"?)
@@ -315,9 +321,7 @@ function Tree(data, compareFunction) {
                 break; //loop is done anway, this just skips adding compareFunction as a data node
             }
             if (Array.isArray(arguments[i])) {
-                for (var j = 0; j < arguments[i].length; ++j) {
-                    this.append(arguments[i][j]); //TODO: should there be functionality to look deeper? or should the constructor be simple, only examining one level of array
-                }
+                this.appendArray(arguments[i]);
             } else {
                 this.append(arguments[i]);
             }
