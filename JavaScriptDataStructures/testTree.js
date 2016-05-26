@@ -26,12 +26,6 @@ function testTree(testDiv) {
     test.log("tree = " + tree);
     
     container.appendChild(test.elem = document.createElement("p"));
-    var arr = [14, 4, 5, 1, 16, 17, 10, 9, 20, 15];
-    test.log("Testing creation of Tree with random array [" + arr + "]: ");
-    tree = new Tree(arr);
-    test.log("tree = " + tree);
-    
-    container.appendChild(test.elem = document.createElement("p"));
     arr = [];
     var limit = 100;
     for (var i = 0; i < limit; ++i) {
@@ -86,6 +80,13 @@ function testTree(testDiv) {
     test.log("Testing a custom compare function (sort by ages) with array: " + people);
     test.log(" Tree (sorted by age, ascending): " + sortedPeople);
     test.log(" Found Person with age == 32: " + found);
+    
+    
+    container.appendChild(test.elem = document.createElement("p"));
+    var arr = [14, 4, 5, 1, 16, 17, 10, 9, 20, 15];
+    test.log("Testing creation of Tree with some random values [" + arr + "]: ");
+    tree = new Tree(arr);
+    test.log("tree = " + tree);
     
     // container.appendChild(test.elem = document.createElement("p"));
     // var arr = [1, 2, 3];

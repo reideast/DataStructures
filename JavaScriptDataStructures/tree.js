@@ -43,14 +43,18 @@ TreeNode.prototype.toString = function () {
     return "NODE{" + (this.left === null ? null : "{" + this.left.data + "}") + " << (" + this.data + "/" + (this.red ? "RED" : "BLACK") + ") >> " + (this.right === null ? null : "{" + this.right.data + "}") + " ^" + (this.parent === null ? null : this.parent.data) + "^}" + " gp:" + (this.grandparent === null ? null : this.grandparent.data) + " uncle:" + (this.uncle === null ? null : this.uncle.data);
 };
 
+
+// data can be a single value, an array, or multiple values or arrays
+//   the only situation it won't be able to handle is if you're passing multiple arrays, expecting them to be placed as individual nodes
 // compare is an optional function which takes two objects of data stored in nodes, and must return:
-//  1. a value less than 0 if the first is ordered lower,
-//  2. 0 if they are equal
-//  3. a value > 0 if the first is ordered higher
+//   1. a value less than 0 if the first is ordered lower,
+//   2. 0 if they are equal
+//   3. a value > 0 if the first is ordered higher
 // if compare is not provided, then is will be substituded by the operators: <, ==, and > 
 function Tree(data, compareFunction) {
     this.length = 0;
     
+    // this could be replaced by the construtory arguments-examining loop if compareFunction argument was given
     var compare = function(a, b) {
             if (a == b) {
                 return 0;
@@ -60,22 +64,6 @@ function Tree(data, compareFunction) {
                 return 1;
             }
     };
-    
-    // moved this functionality to the construtory arguments-examining loop
-    // var compare;
-    // if (arguments.length > 1 && typeof compareFunction === "function") {
-    //     compare = compareFunction;
-    // } else {
-    //     compare = function(a, b) {
-    //         if (a == b) {
-    //             return 0;
-    //         } else if (a < b) {
-    //             return -1;
-    //         } else { // (a > b)
-    //             return 1;
-    //         }
-    //     };
-    // }
     
     var red = true, black = false;
 
@@ -93,10 +81,8 @@ function Tree(data, compareFunction) {
         if (node.right !== leaf) walkNode(node.right, callback);
     }
     
-    // TODO: this.concat or this.appendArray
-    
     this.append = function (item) {
-        console.log("appending:" + item);
+        // console.log("appending:" + item);
         if (root === leaf) {
             root = new TreeNode(item, black, leaf, leaf, null); // Red-Black Insertion - Case 1: New node is root - no properties violated
         } else {
@@ -131,13 +117,13 @@ function Tree(data, compareFunction) {
         }
     }
     function repairTree(node) { // note: the Red-Black Tree algorithm __only__ calls this on Red nodes! ie. called for new nodes, or called recursively after setting a node to Red
-        console.log("repair:" + node);
+        // console.log("repair:" + node);
         if (node === root) { // Red-Black Insertion - Case 1: New node is root - must be black
-            console.log("Case 1 - repairing root");
+            // console.log("Case 1 - repairing root");
             node.black = true;
             return; // returning here explicitly in order to break the if-elsif chain below to save u and gp
         } else if (node.parent.black) { // Red-Black Insertion - Case 2: Parent of new node is black - no properites violated
-            console.log("Case 2 - parent is already black");
+            // console.log("Case 2 - parent is already black");
             return; // do nothing
         }
         
@@ -145,7 +131,7 @@ function Tree(data, compareFunction) {
         var u = node.uncle;
         var gp = node.grandparent;
         if (u !== null && u.red) { // Red-Black Insertion - Case 3: Both Parent and Uncle are red
-            console.log("Case 3 - parent and uncle are red, so make them black, grandparent red and recurse on grandparent");
+            // console.log("Case 3 - parent and uncle are red, so make them black, grandparent red and recurse on grandparent");
             //change both parent and uncle to black
             node.parent.black = true;
             u.black = true;
@@ -157,12 +143,12 @@ function Tree(data, compareFunction) {
         
         // Red-Black Insertion - Case 4: Parent is red, but uncle is black and can't simply rotate grandparent - fix by rotating node.parent downward and node into it's spot, and then recursively repairing node.parent (now a child)
         if (node.parent.right === node && gp.left === node.parent) { // left-hand Case 4: node is right sibling, parent is left sibling
-            console.log("Case 4 - rotate left");
+            // console.log("Case 4 - rotate left");
             rotateLeft(node.parent);
             // redefine var node to point at what used to be it's parent, and has now been rotated down to be node's left child. therefore Case 5 will examine the previous parent
             node = node.left;
         } else if (node.parent.left === node && gp.right === node.parent) { // right hand Case 4: node is left sibling, parent is right sibling
-            console.log("Case 4 - rotate right");
+            // console.log("Case 4 - rotate right");
             rotateRight(node.parent);
             // redefine var node to previous parent 
             node = node.right;
@@ -177,10 +163,10 @@ function Tree(data, compareFunction) {
         gp = node.grandparent; //reset gp pointer, since node would be pointing to a different node if Case 4 was performed
         gp.red = true;
         if (node.parent.left === node) {
-            console.log("Case 5 - rotate grandparent right");
+            // console.log("Case 5 - rotate grandparent right");
             rotateRight(gp);
         } else {
-            console.log("Case 5 - rotate grandparent left");
+            // console.log("Case 5 - rotate grandparent left");
             rotateLeft(gp);
         }
     }
@@ -254,7 +240,10 @@ function Tree(data, compareFunction) {
         } else if (node.right === leaf) { // XOR
             replaceMe(node, node.left);
         } else { //node has two children
-            
+            // swap either in-order predecessor or successor's data, then recursively delete that node
+            var victim = findPredecessor(node); // algorithm notes says "choose either predecessor or successor"...
+            node.data = victim.data;
+            deleteNode(victim); 
         }
     }
     function replaceMe(node, replacement) {
@@ -269,6 +258,20 @@ function Tree(data, compareFunction) {
                 node.parent.right = replacement;
             }
         }
+    }
+    function findPredecessor(node) { // find the largest node in the left subtree of given node
+        var currNode = node.left;
+        while (currNode.right !== leaf) {
+            currNode = currNode.right;
+        }
+        return currNode;
+    }
+    function findSuccessor(node) { // find the smallest node in the right subtree of given node
+        var currNode = node.right;
+        while (currNode.left !== leaf) {
+            currNode = currNode.left;
+        }
+        return currNode;
     }
 
     this.exists = function (data) {
