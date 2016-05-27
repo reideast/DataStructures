@@ -86,7 +86,19 @@ function testTree(testDiv) {
     var arr = [14, 4, 5, 1, 16, 17, 10, 9, 20, 15];
     test.log("Testing creation of Tree with some random values [" + arr + "]: ");
     tree = new Tree(arr);
+    tree.debugTree();
     test.log("tree = " + tree);
+    
+    container.appendChild(test.elem = document.createElement("p"));
+    tree.delete(20);
+    tree.debugTree();
+    test.log("deleting leaf node (20): " + tree);
+    tree.delete(14);
+    tree.debugTree();
+    test.log("deleting single-child node (14): " + tree);
+    tree.delete(5);
+    tree.debugTree();
+    test.log("deleting double-child node (5): " + tree);
     
     // container.appendChild(test.elem = document.createElement("p"));
     // var arr = [1, 2, 3];

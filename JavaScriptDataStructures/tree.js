@@ -80,6 +80,14 @@ function Tree(data, compareFunction) {
         callback(node.data);
         if (node.right !== leaf) walkNode(node.right, callback);
     }
+    this.debugTree = function () {
+        function logNode(node) {
+            console.log("" + node);
+            if (node.left !== leaf) logNode(node.left);
+            if (node.right !== leaf) logNode(node.right);
+        }
+        logNode(root);
+    }
     
     this.append = function (item) {
         // console.log("appending:" + item);
@@ -347,3 +355,4 @@ Tree.prototype.toArray = function () {
   });
   return arr;
 };
+
