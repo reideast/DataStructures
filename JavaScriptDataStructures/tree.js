@@ -244,12 +244,23 @@ function Tree(data, compareFunction) {
         } else if (node.left === leaf && node.right === leaf) {
             replaceMe(node, leaf);
         } else if (node.left === leaf) { // acting as XOR, since we already know that L && L is not already the case
+            if (node.red) { // node is red, child must be black. also stated is that if a red node has only one child, it will be a leaf, which is contrary to what the algorithm description previously said. So I'm not sure which one is right. 
+                console.log("POSSIBLE ERROR: Deleting red node with a single child. Node=" + node);
+                replaceMe(node, node.right);
+            } else if (node.right.red) { // node.black && child.red
+                // replace node with child, and recolor child black
+                node.right.black = true;
+                replaceMe(node, node.right);
+            } else { // node.black && child.black
+                
+            }
             replaceMe(node, node.right);
         } else if (node.right === leaf) { // XOR
             replaceMe(node, node.left);
         } else { //node has two children
             // swap either in-order predecessor or successor's data, then recursively delete that node
-            var victim = findPredecessor(node); // algorithm notes says "choose either predecessor or successor"...
+            // TODO: randomly select left or right
+            var victim = findPredecessor(node); // algorithm notes says "choose either predecessor or successor"...so predecessor.
             node.data = victim.data;
             deleteNode(victim); 
         }
