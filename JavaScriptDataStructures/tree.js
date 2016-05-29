@@ -18,12 +18,23 @@ Object.defineProperties(TreeNode.prototype, {
         },
         enumerable: true
     },
+    "sibling": {
+        get: function () {
+            if (this.parent === null) {
+                return null;
+            } else if (this.parent.left === this) {
+                return this.parent.right;
+            } else {
+                return this.parent.left
+            }
+        }
+    },
     "grandparent": {
         get: function () {
-            if (this.parent) {
-                return this.parent.parent;
-            } else {
+            if (this.parent === null) {
                 return null;
+            } else {
+                return this.parent.parent;
             }
         }
     },
@@ -180,50 +191,50 @@ function Tree(data, compareFunction) {
     }
     function rotateLeft(node) {
         var parent = node.parent;
-        var newNode = node.right;
+        var rotateIntoSpot = node.right;
         
         //node.left is unchanged
-        node.right = newNode.left;
+        node.right = rotateIntoSpot.left;
         node.right.parent = node;
         
-        newNode.left = node;
-        newNode.left.parent = newNode;
-        //newNode.right is unchanged
+        rotateIntoSpot.left = node;
+        rotateIntoSpot.left.parent = rotateIntoSpot;
+        //rotateIntoSpot.right is unchanged
         
         if (parent !== null) {
             if (parent.left === node) {
-                parent.left = newNode;
+                parent.left = rotateIntoSpot;
             } else {
-                parent.right = newNode;
+                parent.right = rotateIntoSpot;
             }
-            newNode.parent = parent;
+            rotateIntoSpot.parent = parent;
         } else {
-            newNode.parent = null;
-            root = newNode;
+            rotateIntoSpot.parent = null;
+            root = rotateIntoSpot;
         }
     }
     function rotateRight(node) {
         var parent = node.parent;
-        var newNode = node.left;
+        var rotateIntoSpot = node.left;
         
-        node.left = newNode.right;
+        node.left = rotateIntoSpot.right;
         node.left.parent = node;
         //node.right is unchanged
         
-        //newnode.left is unchanged
-        newNode.right = node;
-        newNode.right.parent = newNode;
+        //rotateIntoSpot.left is unchanged
+        rotateIntoSpot.right = node;
+        rotateIntoSpot.right.parent = rotateIntoSpot;
         
         if (parent !== null) {
             if (parent.left === node) {
-                parent.left = newNode;
+                parent.left = rotateIntoSpot;
             } else {
-                parent.right = newNode;
+                parent.right = rotateIntoSpot;
             }
-            newNode.parent = parent;
+            rotateIntoSpot.parent = parent;
         } else {
-            newNode.parent = null;
-            root = newNode;
+            rotateIntoSpot.parent = null;
+            root = rotateIntoSpot;
         }
     }
    
@@ -243,26 +254,24 @@ function Tree(data, compareFunction) {
             console.log("Error: Tried to deleteNode on sentinel leaf");
         } else if (node.left === leaf && node.right === leaf) {
             replaceMe(node, leaf);
-        } else if (node.left === leaf) { // acting as XOR, since we already know that L && L is not already the case
-            if (node.red) { // node is red, child must be black. also stated is that if a red node has only one child, it will be a leaf, which is contrary to what the algorithm description previously said. So I'm not sure which one is right. 
-                console.log("POSSIBLE ERROR: Deleting red node with a single child. Node=" + node);
-                replaceMe(node, node.right);
-            } else if (node.right.red) { // node.black && child.red
-                // replace node with child, and recolor child black
-                node.right.black = true;
-                replaceMe(node, node.right);
-            } else { // node.black && child.black
-                
-            }
-            replaceMe(node, node.right);
-        } else if (node.right === leaf) { // XOR
-            replaceMe(node, node.left);
-        } else { //node has two children
+        } else if (node.left !== leaf && node.right !== leaf) { //node has two children
             // swap either in-order predecessor or successor's data, then recursively delete that node
-            // TODO: randomly select left or right
-            var victim = findPredecessor(node); // algorithm notes says "choose either predecessor or successor"...so predecessor.
+            // TODO: TEST randomly select left or right
+            var victim = ((Math.random() < 0.5) ? findSuccessor(node) : findPredecessor(node)); // algorithm notes says "choose either predecessor or successor"...so predecessor.
             node.data = victim.data;
             deleteNode(victim); 
+        } else { // (node.left !== leaf) XOR (node.right !== leaf) ie. exactly one non-null-leaf node
+            var child = (node.left === leaf ? node.right : node.left);
+            replaceMe(node, child);
+            if (node.red) { // node is red, child must be black. also stated is that if a red node has only one child, it will be a leaf, which is contrary to what the algorithm description previously said. So I'm not sure which one is right. 
+                console.log("Deleting red node with a single child. Node=" + node);
+            } else if (child.red) { // node.black && child.red
+                // recolor child black
+                child.black = true;
+            } else { // node.black && child.black
+                // Need to re-blance tree, since a black node was actually removed in the end
+                repaintDeletedSingleChild(child);
+            }
         }
     }
     function replaceMe(node, replacement) {
@@ -292,6 +301,70 @@ function Tree(data, compareFunction) {
         }
         return currNode;
     }
+    function repaintDeletedSingleChild(child) {
+        // Need to re-blance tree, since a black node was actually removed in the end, and therefore child.parent's two paths (child and sibling) have a different number of black nodes
+        if (child.parent === null) {
+            console.log("Delete & Rebalance Case 1: Child was moved upward and is now root")
+            // root should be black; do nothing
+            return;
+        }
+        
+        var sibling = child.sibling;
+        if (sibling.red) {
+            console.log("Delete and Rebalance Case 2: Sibling is Red, so a rotate will reblance");
+            child.parent.red = true;
+            sibling.black = true;
+            if (child.parent.left === child) {
+                rotateLeft(child.parent); 
+            } else {
+                rotateRight(child.parent);
+            }
+            // do not return, continue testing at child
+            sibling = child.sibling; // child.sibling has changed after rotation
+        }
+        
+        if (child.parent.black && sibling.black && sibling.left.black && sibling.right.black) {
+            console.log("Delete and Rebalance Case 3: Node, Parent, Sibling, and Sibling's 2 children are all black. Recolor sibling red, then recurse on Parent in order to remove a black node from Parent's sibling's path.");
+            sibling.red = true;
+            repaintDeletedSingleChild(child.parent);
+            return;
+        }
+        
+        if (child.parent.red && sibling.black && sibling.left.black && sibling.right.black) {
+            console.log("Delete and Rebalance Case 4: Node, Sibling, and Sibling's 2 children are black, but parent is red. Swap color of sibling and parent, balancing both paths out of parent");
+            sibling.red = true;
+            child.parent.black = true;
+            return;
+        }
+        
+        if (sibling.black) {
+            console.log("Delete and Rebalance Case 5: Red sibling. Rotate sibling, then recolor");
+            if (child.parent.left === child && sibling.right.black && sibling.left.red) {
+                sibling.red = true;
+                sibling.left.black = true;
+                rotateRight(sibling);
+            } else if (child.parent.right === child && sibling.left.black && sibling.right.red) {
+                sibling.red = true;
+                sibling.right.black = true;
+                rotateLeft(sibling);
+            }
+            // fall through to case 6, still examining child
+            sibling = child.sibling;
+        }
+        
+        console.log("Delete and Reblance Case 6: Black sibling with black child opposite child. Rotate and recolor.")
+        sibling.red = child.parent.red; // recolor sibling as parent's (arbitrary) color 
+        child.parent.black = true;
+        if (child.parent.left === child) {
+            sibling.right.black = true;
+            rotateLeft(child.parent);
+        } else {
+            sibling.left.black = true;
+            rotateRight(child.parent);
+        }
+    }
+    
+    
 
     this.exists = function (data) {
         if (getNode(root, data) !== null) {
