@@ -82,7 +82,7 @@ function Tree(data, compareFunction) {
     var root = leaf;
 
     this.walkTree = function (callback) {
-        console.log("walking tree with ROOT {" + root.data + "}");
+        // console.log("walking tree with ROOT {" + root.data + "}");
         walkNode(root, callback);
     }
     function walkNode(node, callback) {
@@ -259,7 +259,7 @@ function Tree(data, compareFunction) {
             // swap either in-order predecessor or successor's data, then recursively delete that node (which will be an edge, so the recursion will end quickly)
             // TODO: should this be random? if successor/predecessor is used every time, the process is deterministic!
             // var victim = ((Math.random() < 0.5) ? findSuccessor(node) : findPredecessor(node)); // algorithm notes says "choose either predecessor or successor"...so predecessor.
-            var victim = findSuccessor(node); // always find successor
+            var victim = findPredecessor(node); // always find predeccessor
             node.data = victim.data;
             deleteNode(victim);
         // } else if (node.left === leaf && node.right === leaf) {
@@ -282,6 +282,7 @@ function Tree(data, compareFunction) {
             } else { // node.black && child.black
                 // Need to re-blance tree, since a black node was actually removed in the end
                 // TODO: will this work on a null-leaf?
+                // If child is the null-leaf, then replaceMe( , leaf) just set leaf.parent = node.parent
                 repaintDeletedSingleChild(child);
             }
         }
@@ -322,7 +323,8 @@ function Tree(data, compareFunction) {
             return;
         }
         
-        var sibling = child.sibling;
+        var sibling = child.sibling; // if child is the null-leaf, sibling will work because replaceMe( , leaf) currently assigned leaf.parent properly
+
         if (sibling.red) {
             console.log("Delete and Rebalance Case 2: Sibling is Red, so a rotate will reblance");
             child.parent.red = true;

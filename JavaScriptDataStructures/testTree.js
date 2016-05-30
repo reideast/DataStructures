@@ -102,13 +102,20 @@ function testTree(testDiv) {
     
     var arr = [];
     for (var i = 1; i <= 20; ++i) arr.push(i);
-    test.log("Testing creation of Tree with array of 1..20 [" + arr + "]: ");
+    test.log("Testing creation of Tree with array of 1..20: ");
     tree = new Tree(arr);
+    console.log("Tree after creation:");
     tree.debugTree();
     test.log("tree = " + tree);
+    tree.delete(1);
+    console.log("Tree after delete {1}:");
+    tree.debugTree();
+    test.log(" Delete leaf {1}: " + tree)    
     
     container.appendChild(test.elem = document.createElement("p"));
-    tree.delete(1);
+    tree = new Tree(arr);
+    tree.delete(2);
+    console.log("Tree after delete {2}:");
     tree.debugTree();
-    test.log("Delete leaf (1): " + tree);
+    test.log("Reset 1..20. Delete internal node {2}, which will lead to a leaf being moved up: " + tree);
 }
