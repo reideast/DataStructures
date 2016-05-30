@@ -166,11 +166,13 @@ function Tree(data, compareFunction) {
             rotateLeft(node.parent);
             // redefine var node to point at what used to be it's parent, and has now been rotated down to be node's left child. therefore Case 5 will examine the previous parent
             node = node.left;
+            gp = node.grandparent; //reset gp pointer, since node would be pointing to a different node if Case 4 was performed
         } else if (node.parent.left === node && gp.right === node.parent) { // right hand Case 4: node is left sibling, parent is right sibling
             // console.log("Case 4 - rotate right");
             rotateRight(node.parent);
             // redefine var node to previous parent 
             node = node.right;
+            gp = node.grandparent; //reset gp pointer, since node would be pointing to a different node if Case 4 was performed
         }
         // there was no explicit return for case 4, therefore Case 5 can be examined after case 4's modifications
         
@@ -179,7 +181,6 @@ function Tree(data, compareFunction) {
         //   * if Case 4 was performed, then node is now pointing to the same level that node was before.
         //   * more importantly, parent exists (Case 1) and parent's color is red (Case 2). If parent is red, then it cannot be root, therefore a grandparent must exist!
         node.parent.black = true;
-        gp = node.grandparent; //reset gp pointer, since node would be pointing to a different node if Case 4 was performed
         gp.red = true;
         if (node.parent.left === node) {
             // console.log("Case 5 - rotate grandparent right");
@@ -253,14 +254,17 @@ function Tree(data, compareFunction) {
         } else if (node === leaf) {
             console.log("Error: Tried to deleteNode on sentinel leaf");
         } else if (node.left === leaf && node.right === leaf) {
+            // Delete leaf
             replaceMe(node, leaf);
         } else if (node.left !== leaf && node.right !== leaf) { //node has two children
+            // Delete internal node with exactly two children
             // swap either in-order predecessor or successor's data, then recursively delete that node
-            // TODO: TEST randomly select left or right
+            // TODO: should this be random? if successor/predecessor is used every time, the process is deterministic!
             var victim = ((Math.random() < 0.5) ? findSuccessor(node) : findPredecessor(node)); // algorithm notes says "choose either predecessor or successor"...so predecessor.
             node.data = victim.data;
             deleteNode(victim); 
         } else { // (node.left !== leaf) XOR (node.right !== leaf) ie. exactly one non-null-leaf node
+            // Delete internal node with one child
             var child = (node.left === leaf ? node.right : node.left);
             replaceMe(node, child);
             if (node.red) { // node is red, child must be black. also stated is that if a red node has only one child, it will be a leaf, which is contrary to what the algorithm description previously said. So I'm not sure which one is right. 
