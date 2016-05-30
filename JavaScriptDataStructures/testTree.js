@@ -101,21 +101,37 @@ function testTree(testDiv) {
     // test.log("deleting double-child node (5): " + tree);
     
     var arr = [];
-    for (var i = 1; i <= 20; ++i) arr.push(i);
-    test.log("Testing creation of Tree with array of 1..20: ");
+    for (var i = 10; i <= 200; i += 10) arr.push(i);
+    test.log("Testing creation of Tree with array of 10..200: ");
     tree = new Tree(arr);
     console.log("Tree after creation:");
     tree.debugTree();
     test.log("tree = " + tree);
-    tree.delete(1);
-    console.log("Tree after delete {1}:");
+    tree.delete(10); //tested: case 3,4
+    console.log("Tree after delete {10}:");
     tree.debugTree();
-    test.log(" Delete leaf {1}: " + tree)    
+    test.log(" Delete leaf {10}: " + tree)    
     
+
     container.appendChild(test.elem = document.createElement("p"));
     tree = new Tree(arr);
-    tree.delete(2);
-    console.log("Tree after delete {2}:");
+    tree.delete(20); //tested: case 3,4
+    console.log("Tree after delete {20}:");
     tree.debugTree();
-    test.log("Reset 1..20. Delete internal node {2}, which will lead to a leaf being moved up: " + tree);
+    test.log("Reset 10..200. Delete internal node {20}, which will lead to a leaf being moved up: " + tree);
+
+    tree.delete(10); //tested: black node with red child (simple delete)
+    console.log("Tree after delete {10}:");
+    tree.debugTree();
+    test.log("Delete node with one red child {10}: " + tree);
+
+    tree.delete(30); //tested: case 2, 4
+    console.log("Tree after delete {30}:");
+    tree.debugTree();
+    test.log("Delete node with one red sibling {30}: " + tree);
+
+    tree.delete(70);
+    console.log("Tree after delete {70}:");
+    tree.debugTree();
+    test.log("Delete node with one red sibling {70}: " + tree);
 }

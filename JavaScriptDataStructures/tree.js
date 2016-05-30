@@ -51,7 +51,7 @@ Object.defineProperties(TreeNode.prototype, {
     }
 });
 TreeNode.prototype.toString = function () {
-    return "NODE{" + (this.left === null ? null : "{" + this.left.data + "}") + " << (" + this.data + "/" + (this.red ? "RED" : "BLACK") + ") >> " + (this.right === null ? null : "{" + this.right.data + "}") + " ^" + (this.parent === null ? null : this.parent.data) + "^}" + " gp:" + (this.grandparent === null ? null : this.grandparent.data) + " uncle:" + (this.uncle === null ? null : this.uncle.data);
+    return "NODE{" + (this.left === null ? null : "{" + this.left.data + "}") + " << (" + this.data + "/" + (this.red ? "RED" : "BLACK") + ") >> " + (this.right === null ? null : "{" + this.right.data + "}") + " ^" + (this.parent === null ? null : this.parent.data) + "^}" + " G:" + (this.grandparent === null ? null : this.grandparent.data) + " U:" + (this.uncle === null ? null : this.uncle.data) + " S:" + (this.sibling === null ? null : this.sibling.data);
 };
 
 
@@ -92,12 +92,37 @@ function Tree(data, compareFunction) {
         if (node.right !== leaf) walkNode(node.right, callback);
     }
     this.debugTree = function () {
-        function logNode(node) {
-            console.log("" + node);
-            if (node.left !== leaf) logNode(node.left);
-            if (node.right !== leaf) logNode(node.right);
+        var foundBlackHeight = undefined;
+
+        function reachedLeaf(discoveredBlackHeight, node) {
+            if (foundBlackHeight === undefined) {
+                foundBlackHeight = discoveredBlackHeight;
+            } else {
+                if (discoveredBlackHeight !== foundBlackHeight) {
+                    console.log("ERROR: Tree has an uneven black height on node=" + node);
+                }
+                // } else {
+                //     console.log("verified black height=" + discoveredBlackHeight + " on leaf of node=" + node.data);
+                // }
+            }
         }
-        logNode(root);
+
+        function logNode(node, parentBlackHeight) {
+            console.log("" + node);
+            if (node.black)
+                parentBlackHeight += 1;
+            if (node.left !== leaf)
+                logNode(node.left, parentBlackHeight);
+            else
+                reachedLeaf(parentBlackHeight, node);
+            if (node.right !== leaf)
+                logNode(node.right, parentBlackHeight);
+            else
+                reachedLeaf(parentBlackHeight, node);
+        }
+
+        logNode(root, 0);
+        console.log("Proper black height verified: " + foundBlackHeight);
     }
     
     this.append = function (item) {
@@ -197,7 +222,7 @@ function Tree(data, compareFunction) {
         
         //node.left is unchanged
         node.right = rotateIntoSpot.left;
-        node.right.parent = node;
+        if (node.right !== leaf) node.right.parent = node;
         
         rotateIntoSpot.left = node;
         rotateIntoSpot.left.parent = rotateIntoSpot;
@@ -220,7 +245,7 @@ function Tree(data, compareFunction) {
         var rotateIntoSpot = node.left;
         
         node.left = rotateIntoSpot.right;
-        node.left.parent = node;
+        if (node.left !== leaf) node.left.parent = node;
         //node.right is unchanged
         
         //rotateIntoSpot.left is unchanged
@@ -357,7 +382,7 @@ function Tree(data, compareFunction) {
             if (child.parent.left === child && sibling.right.black && sibling.left.red) {
                 sibling.red = true;
                 sibling.left.black = true;
-                rotateRight(sibling);
+                rotateRight(sibling); // TODO: bug - rotate() resets parent of a null-leaf node! therefore if child is a null-leaf, it's parent & therefore sibling links will be destroyed
             } else if (child.parent.right === child && sibling.left.black && sibling.right.red) {
                 sibling.red = true;
                 sibling.right.black = true;
