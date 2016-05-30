@@ -107,7 +107,6 @@ function Tree(data, compareFunction) {
         } else {
             insertBelowNode(root, item);
         }
-        this.length += 1;
         // console.log("append done, tree is:  ");
         // console.log("" + this); // "" + is to force JS engine to use overloaded toString(), not it's own object print method
     };
@@ -122,6 +121,7 @@ function Tree(data, compareFunction) {
         if (compare(data, node.data) < 0) { // DONE: replace explicit "<" comparison with a compare() function passed to constructor (maybe even optional; falls back to "<"?)
             if (node.left === leaf) {
                 node.left = new TreeNode(data, red, leaf, leaf, node);
+                this.length += 1;
                 repairTree(node.left);
             } else {
                 insertBelowNode(node.left, data);
@@ -129,6 +129,7 @@ function Tree(data, compareFunction) {
         } else {
             if (node.right === leaf) {
                 node.right = new TreeNode(data, red, leaf, leaf, node);
+                this.length += 1;
                 repairTree(node.right);
             } else {
                 insertBelowNode(node.right, data);
@@ -253,32 +254,40 @@ function Tree(data, compareFunction) {
             console.log("Error: Tried to deleteNode on null");
         } else if (node === leaf) {
             console.log("Error: Tried to deleteNode on sentinel leaf");
-        } else if (node.left === leaf && node.right === leaf) {
-            // Delete leaf
-            replaceMe(node, leaf);
         } else if (node.left !== leaf && node.right !== leaf) { //node has two children
             // Delete internal node with exactly two children
-            // swap either in-order predecessor or successor's data, then recursively delete that node
+            // swap either in-order predecessor or successor's data, then recursively delete that node (which will be an edge, so the recursion will end quickly)
             // TODO: should this be random? if successor/predecessor is used every time, the process is deterministic!
-            var victim = ((Math.random() < 0.5) ? findSuccessor(node) : findPredecessor(node)); // algorithm notes says "choose either predecessor or successor"...so predecessor.
+            // var victim = ((Math.random() < 0.5) ? findSuccessor(node) : findPredecessor(node)); // algorithm notes says "choose either predecessor or successor"...so predecessor.
+            var victim = findSuccessor(node); // always find successor
             node.data = victim.data;
-            deleteNode(victim); 
-        } else { // (node.left !== leaf) XOR (node.right !== leaf) ie. exactly one non-null-leaf node
-            // Delete internal node with one child
-            var child = (node.left === leaf ? node.right : node.left);
+            deleteNode(victim);
+        // } else if (node.left === leaf && node.right === leaf) {
+        //     // Delete leaf
+        //     if (!node.red) {
+
+        //     }
+        //     replaceMe(node, leaf);
+        // } else { // (node.left !== leaf) XOR (node.right !== leaf) ie. exactly one non-null-leaf node
+        //     // Delete internal node with one child
+        } else { // node has 0 or 1 non-leaf child
+            var child = (node.left === leaf ? node.right : node.left); // child will be either A. left or right child or B. a leaf (taken from node.left, but still a leaf nonetheless)
             replaceMe(node, child);
-            if (node.red) { // node is red, child must be black. also stated is that if a red node has only one child, it will be a leaf, which is contrary to what the algorithm description previously said. So I'm not sure which one is right. 
-                console.log("Deleting red node with a single child. Node=" + node);
+            if (node.red) { // node is red, therefore child must be black. 
+                console.log("Deleting red node with a single child. Black height unaffected. Node=" + node);
             } else if (child.red) { // node.black && child.red
                 // recolor child black
+                console.log("Deleting a black node with a single red child. Pushing black onto child. Node=" + node);
                 child.black = true;
             } else { // node.black && child.black
                 // Need to re-blance tree, since a black node was actually removed in the end
+                // TODO: will this work on a null-leaf?
                 repaintDeletedSingleChild(child);
             }
         }
     }
     function replaceMe(node, replacement) {
+        this.length -= 1;
         if (node === root) {
             root = replacement;
             replacement.parent = null;
