@@ -130,8 +130,13 @@ function testTree(testDiv) {
     tree.debugTree();
     test.log("Delete node with one red sibling {30}: " + tree);
 
-    tree.delete(70);
+    tree.delete(70); //tested: case 5, 6
     console.log("Tree after delete {70}:");
     tree.debugTree();
     test.log("Delete node with one red sibling {70}: " + tree);
+    
+    tree.delete(170);
+    console.log("Tree after delete {170}:");
+    tree.debugTree();
+    test.log("Delete node with no children, red child on sibling {170}: " + tree);
 }
