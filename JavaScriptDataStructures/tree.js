@@ -83,7 +83,8 @@ function Tree(data, compareFunction) {
 
     this.walkTree = function (callback) {
         // console.log("walking tree with ROOT {" + root.data + "}");
-        walkNode(root, callback);
+        if (root !== leaf)
+            walkNode(root, callback);
     }
     function walkNode(node, callback) {
         // console.log("walking:" + node);
@@ -121,16 +122,23 @@ function Tree(data, compareFunction) {
                 reachedLeaf(parentBlackHeight, node);
         }
 
-        logNode(root, 0);
-        console.log("Proper black height verified: " + foundBlackHeight);
+        if (root !== leaf) {
+            logNode(root, 0);
+        } else {
+            reachedLeaf(0, root);
+        }
+        console.log("Proper black height verified: " + foundBlackHeight + ". Tree.length = " + this.length);
     }
     
     this.append = function (item) {
         // console.log("appending:" + item);
         if (root === leaf) {
             root = new TreeNode(item, black, leaf, leaf, null); // Red-Black Insertion - Case 1: New node is root - no properties violated
+            this.length += 1;
+            console.log(this);
+            console.log("incrementing this.length=" + this.length);
         } else {
-            insertBelowNode(root, item);
+            insertBelowNode.call(this, root, item);
         }
         // console.log("append done, tree is:  ");
         // console.log("" + this); // "" + is to force JS engine to use overloaded toString(), not it's own object print method
@@ -147,17 +155,19 @@ function Tree(data, compareFunction) {
             if (node.left === leaf) {
                 node.left = new TreeNode(data, red, leaf, leaf, node);
                 this.length += 1;
+                console.log("incrementing this.length=" + this.length);
                 repairTree(node.left);
             } else {
-                insertBelowNode(node.left, data);
+                insertBelowNode.call(this,node.left, data);
             }
         } else {
             if (node.right === leaf) {
                 node.right = new TreeNode(data, red, leaf, leaf, node);
                 this.length += 1;
+                console.log("incrementing this.length=" + this.length);
                 repairTree(node.right);
             } else {
-                insertBelowNode(node.right, data);
+                insertBelowNode.call(this,node.right, data);
             }
         }
     }
@@ -314,6 +324,8 @@ function Tree(data, compareFunction) {
     }
     function replaceMe(node, replacement) {
         this.length -= 1;
+        console.log(this);
+        console.log("this.length decremented=" + this.length);
         if (node === root) {
             root = replacement;
             replacement.parent = null;
@@ -430,6 +442,9 @@ function Tree(data, compareFunction) {
     // getNode will return the node for which compare() to needle returns 0
     // or null if not found
     function getNode(node, needle) {
+        if (node === leaf) {
+            return null;
+        }
         var result = compare(needle, node.data);
         if (result < 0) {
             if (node.left !== leaf) {
@@ -480,3 +495,8 @@ Tree.prototype.toArray = function () {
   return arr;
 };
 
+// 
+Array.prototype.treeSort = function (compareFunction) {
+    var tree = new Tree(this, compareFunction);
+    return tree.toArray();
+}

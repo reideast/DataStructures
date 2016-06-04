@@ -139,4 +139,11 @@ function testTree(testDiv) {
     console.log("Tree after delete {170}:");
     tree.debugTree();
     test.log("Delete node with no children, red child on sibling {170}: " + tree);
+
+    console.log("Delete nonexistant {-10 & 'badData'}:");
+    tree.delete(-10);
+    tree.delete("badData");
+    test.log("Delete nonexistant data:" + tree);
+
+    
 }
